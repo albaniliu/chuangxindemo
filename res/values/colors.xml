@@ -1,0 +1,50 @@
+<resources>
+
+    <drawable name="color_stdbg">#f1f1f1</drawable>
+    <drawable name="color_stdbg2">#F3F3F3</drawable>
+    <drawable name="splash_bg">#FFF359</drawable>
+    <drawable name="dlg_text">#333333</drawable>
+    <drawable name="dlg_bg">#ffffff</drawable>
+    <drawable name="black">#000000</drawable>
+    <drawable name="white">#ffffff</drawable>
+    <drawable name="color_border">#cccccc</drawable>
+    <drawable name="color_border2">#cfcfcf</drawable>
+    <drawable name="red">#cc3333</drawable>
+    <drawable name="button_text">#363636</drawable>
+    <drawable name="tabbar_normal">#464646</drawable>
+    <drawable name="tabbar_highlight">#29aaf7</drawable>
+    <drawable name="gray">#c7c7c7</drawable>
+    <drawable name="color_text">#262626</drawable>
+    <drawable name="alpha_black">#99000000</drawable>
+    <drawable name="color_transparent">#00000000</drawable>
+    <drawable name="color_price">#a9e9f7</drawable>
+    <drawable name="color_item_normal">#e7e7e7</drawable>
+    <drawable name="color_item_selected">#fcfcfc</drawable>
+    <drawable name="color_item_text_normal">#3b3b3b</drawable>
+    <drawable name="color_item_text_normal2">#919191</drawable>
+    <drawable name="color_item_text_selected">#4A97C9</drawable>
+    <drawable name="color_item_text_divider">#F8F8F8</drawable>
+    <drawable name="color_titlebar_button_text_normal">#cccccc</drawable>
+    <drawable name="color_titlebar_button_text_disable">#5e5e5f</drawable>
+    <drawable name="color_dark_grid_back">#ff3b3b3b</drawable>
+    <drawable name="color_light_grid_back">#ff444444</drawable>
+    <drawable name="color_bar_background">#aabbbbbb</drawable>
+    <drawable name="color_moreview_background">#ffFAFAFA</drawable>
+    <drawable name="color_line">#ffcccccc</drawable>
+
+    <color name="color_more_item_normal">#00ffffff</color>
+    <color name="color_more_item_click">#ffcccccc</color>
+    <color name="color_title_melle_selected">#ff2FA5FD</color>
+    <color name="color_title_melle_normal">#ffcccccc</color>
+    <color name="color_item_text_copyright">#9f8c7a</color>
+    <color name="color_text_shadow">#244660</color>
+    <color name="color_text_hint">#a6a6a6</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00ffffff</color>
+    <color name="more_back">#30A5FF</color>
+    <color name="confirm_btn_pressed">#30a5ff</color>
+    <color name="confirm_btn_idle">#cccccc</color>
+    <color name="confirm_btn_unabled">#5e5e5f</color>
+    <color name="black_overlay">#66000000</color>
+</resources>
