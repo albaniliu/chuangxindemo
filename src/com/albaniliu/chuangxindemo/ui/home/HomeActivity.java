@@ -1,6 +1,7 @@
 
 package com.albaniliu.chuangxindemo.ui.home;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,6 +25,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.albaniliu.chuangxindemo.R;
 import com.albaniliu.chuangxindemo.util.BundleKeyWord;
@@ -51,6 +53,7 @@ public class HomeActivity extends Activity {
 
     public static final int MSG_CHECK_HOME_RESOURCE_LOADING = 1001;
     public static final int MSG_DOWNLOAD_FINISHED = 1002;
+    public static final int MSG_DOWNLOAD_FAILED = 1003;
     public static int DEFAULT_BANNER_COUNT = 5;
 
     public static final String Id = "HomeActivity";
@@ -71,6 +74,8 @@ public class HomeActivity extends Activity {
 		    	setDefaultClassfiView();
 		    	dialog.dismiss();
 		    	classfiView.setVisibility(View.VISIBLE);
+		    } else if (msg.what == MSG_DOWNLOAD_FAILED) {
+		        Toast.makeText(getBaseContext(), "下载失败", Toast.LENGTH_LONG).show();
 		    }
 	    }
     };
@@ -171,13 +176,18 @@ public class HomeActivity extends Activity {
                     String cover = HTTPClient.COVER_INDEX_PREFIX + obj.getString("cover");
                     String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
                             + "test" + i + ".jpg";
+                    File file = new File(fileName);
+                    if (file.exists()) {
+                        
+                    }
                     HTTPClient.getStreamFromUrl(cover, fileName);
                     Log.v(TAG, obj.getString("id"));
                 }
+                mHandler.sendEmptyMessageDelayed(MSG_DOWNLOAD_FINISHED, 200);
             } catch (Exception e) {
+                mHandler.sendEmptyMessage(MSG_DOWNLOAD_FAILED);
                 e.printStackTrace();
             }
-            mHandler.sendEmptyMessage(MSG_DOWNLOAD_FINISHED);
         }
     }
 }
