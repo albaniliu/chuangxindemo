@@ -5,13 +5,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,11 +23,13 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.albaniliu.chuangxindemo.R;
 import com.albaniliu.chuangxindemo.util.BundleKeyWord;
 import com.albaniliu.chuangxindemo.util.HTTPClient;
 import com.albaniliu.chuangxindemo.util.ResourceUtils;
+import com.albaniliu.chuangxindemo.util.Utils;
 
 public class HomeActivity extends Activity {
     private static String TAG = "HomeActivity";
@@ -44,7 +50,7 @@ public class HomeActivity extends Activity {
     };
 
     public static final int MSG_CHECK_HOME_RESOURCE_LOADING = 1001;
-
+    public static final int MSG_DOWNLOAD_FINISHED = 1002;
     public static int DEFAULT_BANNER_COUNT = 5;
 
     public static final String Id = "HomeActivity";
@@ -54,27 +60,20 @@ public class HomeActivity extends Activity {
 
     private LinearLayout classfiView;
     private ProgressDialog  dialog;
+    private JSONArray allDir;
+    private int totalIndex;
 
-    // private Handler mHandler = new Handler() {
-    //
-    // @Override
-    // public void handleMessage(Message msg) {
-    // super.handleMessage(msg);
-    // if (msg.what == MSG_CHECK_HOME_RESOURCE_LOADING) {
-    // if (homeData.isLoaded()) {
-    // setClassfiView();
-    // } else if (!homeData.isLoading()) {
-    // homeData.loadHomeResource(mHandler,HomeActivity.this);
-    // } else
-    // chechHomeResource();
-    // } else {
-    // // if (bannerAdapter != null)
-    // // bannerAdapter.notifyDataSetChanged();
-    // setClassfiView();
-    // }
-    // }
-    //
-    // };
+    private Handler mHandler = new Handler() {
+	    @Override
+	    public void handleMessage(Message msg) {
+		    super.handleMessage(msg);
+		    if (msg.what == MSG_DOWNLOAD_FINISHED) {
+		    	setDefaultClassfiView();
+		    	dialog.dismiss();
+		    	classfiView.setVisibility(View.VISIBLE);
+		    }
+	    }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,15 +83,26 @@ public class HomeActivity extends Activity {
         ResourceUtils.setContext(this);
         service = Executors.newSingleThreadExecutor();
         classfiView = (LinearLayout) this.findViewById(R.id.classfi_view);
-        setDefaultClassfiView();
-        downloadThread = new DownloadThread();
-        downloadThread.start();
+        
+        if (downloadThread == null) {
+	        downloadThread = new DownloadThread();
+	        downloadThread.start();
+        }
+        classfiView.setVisibility(View.GONE);
+        if (dialog == null) {
+            dialog = new ProgressDialog(HomeActivity.this);
+            dialog.setTitle("please wait");
+            dialog.setMessage("downloading!!");
+        }
+        dialog.show();
     }
 
     private void setDefaultClassfiView() {
         classfiView.removeAllViews();
-        for (int i = 0; i < 7; i++) {
-            setDefaultClassfiLine(i + 1);
+        totalIndex = 0;
+        int line = 0;
+        while (totalIndex < allDir.length()) {
+            setDefaultClassfiLine(line++);
         }
     }
 
@@ -106,7 +116,7 @@ public class HomeActivity extends Activity {
         int num = 2;
         if (screenWidth > screenHeight)
             num = 3;
-        for (int i = 0; i < num; i++) {
+        for (int i = 0; i < num && totalIndex < allDir.length(); i++, totalIndex++) {
             LinearLayout classfiImage = (LinearLayout) getLayoutInflater().inflate(
                     R.layout.classfi_image, null);
             FrameLayout frame = (FrameLayout) classfiImage.findViewById(R.id.left);
@@ -125,96 +135,29 @@ public class HomeActivity extends Activity {
                         return;
                     }
                     Bundle bundle = new Bundle();
-                    bundle.putInt(BundleKeyWord.KEY_TYPE, (line - 1) * 2 + 1);
+                    bundle.putInt(BundleKeyWord.KEY_TYPE, line * 2 + 1);
                     Intent it = new Intent(HomeActivity.this, ImageGridActivity.class);
                     startActivity(it);
                 }
 
             });
+            ImageView image = (ImageView) classfiImage.findViewById(R.id.image_left);
+            String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
+                    + "test" + totalIndex + ".jpg";
+            Bitmap bitmap = Utils.createBitmapByFilePath(fileName, 200);
+            image.setImageBitmap(bitmap);
+            
+            TextView txt = (TextView) classfiImage.findViewById(R.id.des);
+            JSONObject obj;
+			try {
+				obj = (JSONObject) allDir.get(totalIndex);
+				txt.setText(obj.getString("name"));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             classfiLine.addView(classfiImage);
         }
-
-        // ImageView imageLeft = (ImageView) classfiLine
-        // .findViewById(R.id.image_left);
-        // ImageView imageRight = (ImageView) classfiLine
-        // .findViewById(R.id.image_right);
-        //
-        // TextView des1 = (TextView) classfiLine.findViewById(R.id.des1);
-        // if (des1 != null)
-        // des1.setText(contentDesID[(line - 1) * 2]);
-        // TextView des2 = (TextView) classfiLine.findViewById(R.id.des2);
-        // if (des2 != null)
-        // des2.setText(contentDesID[(line - 1) * 2 + 1]);
-        // if (imageLeft != null)
-        // imageLeft.setImageBitmap(ResourceUtils.getDefaultClassfiBitmap());
-        // if (imageRight != null)
-        // imageRight.setImageBitmap(ResourceUtils.getDefaultClassfiBitmap());
-        // FrameLayout left = (FrameLayout) classfiLine.findViewById(R.id.left);
-        // if (left != null) {
-        // left.setOnClickListener(new OnClickListener() {
-        //
-        // @Override
-        // public void onClick(View v) {
-        // Bundle bundle = new Bundle();
-        // bundle.putInt(BundleKeyWord.KEY_TYPE, (line - 1) * 2 + 1);
-        // bundle.putString(BundleKeyWord.KEY_TITLE, getResources()
-        // .getString(contentDesID[(line - 1) * 2]));
-        // // bundle.putInt(BundleKeyWord.KEY_DATA_SOURCE,
-        // // ImageDataManager.DATASORT);
-        // bundle.putBoolean(BundleKeyWord.KEY_NOT_RETRIEVED, true);
-        // bundle.putBoolean(BundleKeyWord.KEY_NEEDBACK, true);
-        // bundle.putBoolean(BundleKeyWord.KEY_NEEDBACK_BUTTON, true);
-        // bundle.putBoolean(BundleKeyWord.KEY_RESET_COLOR, true);
-        // // iViewManager.getMainActivity().getTitleBar()
-        // // .setColorButtonSrc(0);
-        // // iViewManager.showView(RecommendActivity.Id + SortView.Id,
-        // // RecommendActivity.class, true, bundle);
-        //
-        // // BaseActivity curActivity = (BaseActivity) iViewManager
-        // // .getCurrentActivity();
-        // // if (curActivity != null) {
-        // // int viewid = curActivity.getTraceViewID();
-        // // UserOperateTraceEngine.Trace(new UserOperation(
-        // // UserOperation.KENTERTHUMBVIEW).setView(viewid));
-        // // }
-        // }
-        //
-        // });
-        // }
-        // FrameLayout right = (FrameLayout)
-        // classfiLine.findViewById(R.id.right);
-        // if (right != null) {
-        // right.setOnClickListener(new OnClickListener() {
-        //
-        // @Override
-        // public void onClick(View v) {
-        // Bundle bundle = new Bundle();
-        // bundle.putInt(BundleKeyWord.KEY_TYPE, (line - 1) * 2 + 2);
-        // bundle.putString(BundleKeyWord.KEY_TITLE, getResources()
-        // .getString(contentDesID[(line - 1) * 2 + 1]));
-        // // bundle.putInt(BundleKeyWord.KEY_DATA_SOURCE,
-        // // ImageDataManager.DATASORT);
-        // bundle.putBoolean(BundleKeyWord.KEY_NOT_RETRIEVED, true);
-        // bundle.putBoolean(BundleKeyWord.KEY_NEEDBACK, true);
-        // bundle.putBoolean(BundleKeyWord.KEY_NEEDBACK_BUTTON, true);
-        // bundle.putBoolean(BundleKeyWord.KEY_RESET_COLOR, true);
-        // // iViewManager.getMainActivity().getTitleBar()
-        // // .setColorButtonSrc(0);
-        //
-        // // iViewManager.showView(RecommendActivity.Id + SortView.Id,
-        // // RecommendActivity.class, true, bundle);
-        //
-        // // BaseActivity curActivity = (BaseActivity) iViewManager
-        // // .getCurrentActivity();
-        // // if (curActivity != null) {
-        // // int viewid = curActivity.getTraceViewID();
-        // // UserOperateTraceEngine.Trace(new UserOperation(
-        // // UserOperation.KENTERTHUMBVIEW).setView(viewid));
-        // // }
-        // }
-        //
-        // });
-        // }
 
         classfiView.addView(classfiLine);
     }
@@ -222,7 +165,7 @@ public class HomeActivity extends Activity {
     class DownloadThread extends Thread {
         public void run() {
             try {
-                JSONArray allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX);
+                allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX);
                 for (int i = 0; i < allDir.length(); i++) {
                     JSONObject obj = (JSONObject) allDir.get(i);
                     String cover = HTTPClient.COVER_INDEX_PREFIX + obj.getString("cover");
@@ -234,6 +177,7 @@ public class HomeActivity extends Activity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            mHandler.sendEmptyMessage(MSG_DOWNLOAD_FINISHED);
         }
     }
 }
