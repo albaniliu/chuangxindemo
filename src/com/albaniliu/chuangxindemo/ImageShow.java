@@ -25,6 +25,7 @@ public class ImageShow extends Activity {
 		mAdapter = new ViewPagerAdapter(mTestFolder);
 		ViewPager pager = (ViewPager) findViewById(R.id.photo_flow);
 		pager.setOffscreenPageLimit(1);
+		pager.setPageMargin(20);
 		pager.setHorizontalFadingEdgeEnabled(true);
 		pager.setAdapter(mAdapter);
 	}
