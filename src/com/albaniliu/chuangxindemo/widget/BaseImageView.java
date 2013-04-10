@@ -79,11 +79,10 @@ public class BaseImageView extends ImageView {
 		instance = this;
 	}
 
-	public BaseImageView(Context context, AttributeSet attrs, int imageWidth,
-			int imageHeight) {
+	public BaseImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		this.imageHeight = imageHeight;
-		this.imageWidth = imageWidth;
+		this.imageHeight = 1;
+		this.imageWidth = 1;
 		init(context);
 		instance = this;
 	}
@@ -198,8 +197,6 @@ public class BaseImageView extends ImageView {
 
 		if (vertical) {
 			int viewHeight = getHeight();
-			// if(viewHeight<=0)
-			// viewHeight = (int) (mScreenHeight);
 			if (height < viewHeight) {
 				deltaY = (viewHeight - height) / 2 - rect.top;
 			} else if (rect.top > 0) {
@@ -211,8 +208,6 @@ public class BaseImageView extends ImageView {
 
 		if (horizontal) {
 			int viewWidth = getWidth();
-			// if(viewWidth<=0)
-			// viewWidth = mScreenWidth;
 			if (width < viewWidth) {
 				deltaX = (viewWidth - width) / 2 - rect.left;
 			} else if (rect.left > 0) {

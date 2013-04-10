@@ -129,7 +129,7 @@ public class LargePicGallery extends ViewPager {
 			originalScale = imageView.getScale();
 			break;
 		case MotionEvent.ACTION_MOVE:
-			Log.d(VIEW_LOG_TAG, "prePosX = " + prePosX + " prePosY = " + prePosY);
+			// Log.d(VIEW_LOG_TAG, "prePosX = " + prePosX + " prePosY = " + prePosY);
 
 			if (event.getPointerCount() == 2) {
 				float x = event.getX(0) - event.getX(1);
@@ -148,7 +148,7 @@ public class LargePicGallery extends ViewPager {
 				
 				float curX = event.getX();
 				float curY = event.getY();
-				Log.d(VIEW_LOG_TAG, "curX = " + curX + " curY = " + curY);
+				// Log.d(VIEW_LOG_TAG, "curX = " + curX + " curY = " + curY);
 				/*
 				if (moveImagePosition((int)(curX - prePosX), (int) (curY - prePosY))) {
 					prePosX = curX;
@@ -203,6 +203,7 @@ public class LargePicGallery extends ViewPager {
 
 	private boolean moveImagePosition(int disX, int disY) {
 		
+	    Log.d(VIEW_LOG_TAG, " disX = " + disX + " disY = " + disY);
 		float v[] = new float[9];
 		Matrix m = imageView.getImageMatrix();
 		m.getValues(v);
@@ -218,15 +219,16 @@ public class LargePicGallery extends ViewPager {
 		}
 
 		left = v[Matrix.MTRANS_X];
-		Log.d(VIEW_LOG_TAG, "left = " + left);
+		
 		right = left + width;
+		Log.d(VIEW_LOG_TAG, "left = " + left + " right = " + right);
 		Rect r = new Rect();
 		imageView.getGlobalVisibleRect(r);
 		Log.d(VIEW_LOG_TAG, "rect = " + r.toShortString());
 		if (disX > 1) {
 			// 向左滑动
 
-			if (r.left > 0) {// 判断当前ImageView是否显示完全
+			if (r.left > 0) { // 判断当前ImageView是否显示完全
 				return false;
 			} else if (right <= mScreenWidth) {
 				return false;
@@ -236,7 +238,7 @@ public class LargePicGallery extends ViewPager {
 					disX = (int) maxDistance;
 				}
 				Log.d(VIEW_LOG_TAG, "postTranslate x = " + disX + " y = " + disY);
-				imageView.postTranslate(-disX, -disY);
+				imageView.postTranslate(disX, disY);
 			}
 			return true;
 		} else if (disX < -1) {
@@ -251,7 +253,7 @@ public class LargePicGallery extends ViewPager {
 					disX = (int) left;
 				}
 				Log.d(VIEW_LOG_TAG, "postTranslate x = " + disX + " y = " + disY);
-				imageView.postTranslate(-disX, -disY);
+				imageView.postTranslate(disX, disY);
 			}
 			return true;
 		}
