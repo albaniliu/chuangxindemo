@@ -29,10 +29,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
 
 	public static  int DEFAULT_BANNER_COUNT = 5;
 
-	public static final String Id = "HomeActivity";
-	private LayoutParams bottomParams;
-
-	private ExecutorService service = null;
+	public static final String Id = "ImageGridActivity";
 
 	private LinearLayout classfiView;
 
@@ -63,7 +60,6 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.home_activity);
 		ResourceUtils.setContext(this);
-		service = Executors.newSingleThreadExecutor();
 		classfiView = (LinearLayout) this.findViewById(R.id.classfi_view);
 		setDefaultClassfiView();
 		downloadThread = new DownloadThread();
@@ -95,89 +91,6 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
 			classfiLine.addView(classfiImage);
 			frame.setOnClickListener(this);
 		}
-		
-		
-		
-//		ImageView imageLeft = (ImageView) classfiLine
-//				.findViewById(R.id.image_left);
-//		ImageView imageRight = (ImageView) classfiLine
-//				.findViewById(R.id.image_right);
-//
-//		TextView des1 = (TextView) classfiLine.findViewById(R.id.des1);
-//		if (des1 != null)
-//			des1.setText(contentDesID[(line - 1) * 2]);
-//		TextView des2 = (TextView) classfiLine.findViewById(R.id.des2);
-//		if (des2 != null)
-//			des2.setText(contentDesID[(line - 1) * 2 + 1]);
-//		if (imageLeft != null)
-//			imageLeft.setImageBitmap(ResourceUtils.getDefaultClassfiBitmap());
-//		if (imageRight != null)
-//			imageRight.setImageBitmap(ResourceUtils.getDefaultClassfiBitmap());
-//		FrameLayout left = (FrameLayout) classfiLine.findViewById(R.id.left);
-//		if (left != null) {
-//			left.setOnClickListener(new OnClickListener() {
-//
-//				@Override
-//				public void onClick(View v) {
-//					Bundle bundle = new Bundle();
-//					bundle.putInt(BundleKeyWord.KEY_TYPE, (line - 1) * 2 + 1);
-//					bundle.putString(BundleKeyWord.KEY_TITLE, getResources()
-//							.getString(contentDesID[(line - 1) * 2]));
-////					bundle.putInt(BundleKeyWord.KEY_DATA_SOURCE,
-////							ImageDataManager.DATASORT);
-//					bundle.putBoolean(BundleKeyWord.KEY_NOT_RETRIEVED, true);
-//					bundle.putBoolean(BundleKeyWord.KEY_NEEDBACK, true);
-//					bundle.putBoolean(BundleKeyWord.KEY_NEEDBACK_BUTTON, true);
-//					bundle.putBoolean(BundleKeyWord.KEY_RESET_COLOR, true);
-//					// iViewManager.getMainActivity().getTitleBar()
-//					// .setColorButtonSrc(0);
-////					iViewManager.showView(RecommendActivity.Id + SortView.Id,
-////							RecommendActivity.class, true, bundle);
-//
-////					BaseActivity curActivity = (BaseActivity) iViewManager
-////							.getCurrentActivity();
-////					if (curActivity != null) {
-////						int viewid = curActivity.getTraceViewID();
-////						UserOperateTraceEngine.Trace(new UserOperation(
-////								UserOperation.KENTERTHUMBVIEW).setView(viewid));
-////					}
-//				}
-//
-//			});
-//		}
-//		FrameLayout right = (FrameLayout) classfiLine.findViewById(R.id.right);
-//		if (right != null) {
-//			right.setOnClickListener(new OnClickListener() {
-//
-//				@Override
-//				public void onClick(View v) {
-//					Bundle bundle = new Bundle();
-//					bundle.putInt(BundleKeyWord.KEY_TYPE, (line - 1) * 2 + 2);
-//					bundle.putString(BundleKeyWord.KEY_TITLE, getResources()
-//							.getString(contentDesID[(line - 1) * 2 + 1]));
-////					bundle.putInt(BundleKeyWord.KEY_DATA_SOURCE,
-////							ImageDataManager.DATASORT);
-//					bundle.putBoolean(BundleKeyWord.KEY_NOT_RETRIEVED, true);
-//					bundle.putBoolean(BundleKeyWord.KEY_NEEDBACK, true);
-//					bundle.putBoolean(BundleKeyWord.KEY_NEEDBACK_BUTTON, true);
-//					bundle.putBoolean(BundleKeyWord.KEY_RESET_COLOR, true);
-//					// iViewManager.getMainActivity().getTitleBar()
-//					// .setColorButtonSrc(0);
-//
-////					iViewManager.showView(RecommendActivity.Id + SortView.Id,
-////							RecommendActivity.class, true, bundle);
-//
-////					BaseActivity curActivity = (BaseActivity) iViewManager
-////							.getCurrentActivity();
-////					if (curActivity != null) {
-////						int viewid = curActivity.getTraceViewID();
-////						UserOperateTraceEngine.Trace(new UserOperation(
-////								UserOperation.KENTERTHUMBVIEW).setView(viewid));
-////					}
-//				}
-//
-//			});
-//		}
 		
 		classfiView.addView(classfiLine);
 	}
