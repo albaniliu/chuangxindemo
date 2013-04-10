@@ -37,7 +37,8 @@ public class MainActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onResume();
 		mTouch = false;
-//		mFlashThread.start();
+		mFlashThread = new PlayThread();
+		mFlashThread.start();
 	}
 
 	@Override
@@ -45,7 +46,7 @@ public class MainActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onStop();
 		Log.i("Main", "onStop");
-//		mFlashThread.interrupt();
+		mFlashThread.interrupt();
 	}
 
 	private final int MSG_START_ACTIVITY = 0;
@@ -73,6 +74,8 @@ public class MainActivity extends Activity {
 	private Thread mFlashThread;
 	int mResources[] = {R.drawable.meinv0, R.drawable.meinv1, R.drawable.meinv2, R.drawable.meinv3};
 	int index = 0;
+	
+	private MyView myView;
 
 	public Handler mHandler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
@@ -105,7 +108,8 @@ public class MainActivity extends Activity {
 		initFields();
 //		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		mHandler.sendEmptyMessageDelayed(MSG_START_ACTIVITY, 2000);
-		mFlashThread = new PlayThread();
+//		mFlashThread = new PlayThread();
+//		mFlashThread.start();
 	}
 	
 	public class MyView extends View {
@@ -143,8 +147,7 @@ public class MainActivity extends Activity {
 			canvas.drawBitmap(button, 100, 100, paint);
 			
 			index = ++index % mResources.length;
-//			if (!mTouch)
-				invalidate();
+//			invalidate();
 		}
 		
 	}
@@ -271,8 +274,8 @@ public class MainActivity extends Activity {
 //		mViewManager.showView(HomeActivity.Id, HomeActivity.class, false,
 //				bundle, true);
 
-		MyView v = new MyView(this);
-		setContentView(v);
+		myView = new MyView(this);
+		setContentView(myView);
 	}
 	
 	public void flashImage() {
@@ -284,17 +287,16 @@ public class MainActivity extends Activity {
 	class PlayThread extends Thread {
 		
 		public void run() {
-			int index = 0;
-			int r = mResources.length;
-			while(true) {
+			while(!Thread.currentThread().isInterrupted()) {
 				try {
-					mHandler.sendEmptyMessage(MSG_FLASH_IMAGE);
-					Thread.sleep(200);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					break;
 				}
+				if (myView != null)
+					myView.postInvalidate();
 			}
 		}
 	}
