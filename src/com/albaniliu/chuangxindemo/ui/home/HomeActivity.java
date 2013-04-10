@@ -174,15 +174,21 @@ public class HomeActivity extends Activity {
                 for (int i = 0; i < allDir.length(); i++) {
                     JSONObject obj = (JSONObject) allDir.get(i);
                     String cover = HTTPClient.COVER_INDEX_PREFIX + obj.getString("cover");
+                    Log.v(TAG, obj.getString("cover"));
+                    String coverPath = obj.getString("cover");
+                    String coverName = coverPath.substring(coverPath.lastIndexOf('/') + 1);
+                    Log.v(TAG, coverName);
                     String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
-                            + "test" + i + ".jpg";
+                            + coverName;
                     File file = new File(fileName);
                     if (file.exists()) {
                         // 
                     } else {
-                    	HTTPClient.getStreamFromUrl(cover, fileName);
+                    	String tmpFileName = fileName + ".tmp";
+                    	HTTPClient.getStreamFromUrl(cover, tmpFileName);
+                    	File tmpFile = new File(tmpFileName);
+                    	tmpFile.renameTo(file);
                     }
-                    Log.v(TAG, obj.getString("id"));
                 }
                 mHandler.sendEmptyMessageDelayed(MSG_DOWNLOAD_FINISHED, 200);
             } catch (Exception e) {
