@@ -6,11 +6,10 @@
     android:background="#000000"
     android:orientation="vertical" >
 
-    <android.support.v4.view.ViewPager
+    <com.albaniliu.chuangxindemo.widget.LargePicGallery
         android:id="@+id/photo_flow"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </android.support.v4.view.ViewPager>
+        android:layout_height="match_parent" />
 
     <RelativeLayout
         android:id="@+id/wrapper2"
@@ -31,26 +30,37 @@
     </RelativeLayout>
     
     <LinearLayout 
+        android:id="@+id/flow_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_gravity="bottom">
-        <Button 
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="20dp"
-            android:onClick="onBackClick"
-            android:text="@string/btn_text_back"/>
+        android:layout_marginTop="9px"
+        android:layout_marginBottom="9px"
+        android:layout_gravity="top"
+        android:visibility="invisible" >
+        <ImageView 
+            android:layout_width="64px"
+            android:layout_height="64px"
+            android:layout_marginLeft="40px"
+            android:src="@drawable/ic_launcher" />
+        
+        <ImageView 
+            android:layout_width="64px"
+            android:layout_height="64px"
+            android:layout_marginLeft="20px"
+            android:src="@drawable/ic_launcher" />
+        
         <View 
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1.0"/>
         
         <Button 
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_marginRight="20dp"
+            android:layout_width="64px"
+            android:layout_height="64px"
+            android:layout_marginRight="40px"
             android:onClick="onSlideClick"
+            android:textSize="10sp"
             android:text="@string/btn_text_slideshow"/>
     </LinearLayout>
 

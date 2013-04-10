@@ -176,33 +176,6 @@ public class BaseImageView extends ImageView {
 		}
 	}
 
-	public void setImageBitmapToWallpaper(Bitmap bitmap) {
-		this.imageHeight = bitmap.getHeight();
-		this.imageWidth = bitmap.getWidth();
-		mSuppMatrix = new Matrix();
-		super.setImageBitmap(bitmap);
-
-		try {
-			BaseImageView.this.clearAnimation();
-			image = bitmap;
-			// 计算适应屏幕的比例
-			arithScaleRate();
-			zoomTo(this.getFullScreenScaleRate(), mScreenWidth / 2f,
-					mScreenHeight / 2f, 10f);
-			layoutToCenter();
-			// this.postDelayed(new Runnable() {
-			// public void run() {
-			AnimationSet animSet = new AnimationSet(false);
-			AlphaAnimation alphaAnim = new AlphaAnimation(0, 1);
-			animSet.addAnimation(alphaAnim);
-			animSet.setDuration(200);
-			BaseImageView.this.setAnimation(animSet);
-			BaseImageView.this.setVisibility(View.VISIBLE);
-		} catch (Exception e) {
-		}
-
-	}
-
 	// Center as much as possible in one or both axis. Centering is
 	// defined as follows: if the image is scaled down below the
 	// view's dimensions then center it (literally). If the image
@@ -468,11 +441,6 @@ public class BaseImageView extends ImageView {
 		this.imageHeight = bitmap.getHeight();
 		this.imageWidth = bitmap.getWidth();
 		mSuppMatrix = new Matrix();
-		// mBaseMatrix = new Matrix();
-		// mDisplayMatrix = new Matrix();
-		// mMatrixValues = new float[9];
-		// mThisWidth = -1;
-		// mThisHeight = -1;
 		this.setImageBitmap(bitmap);
 
 	}
@@ -494,17 +462,6 @@ public class BaseImageView extends ImageView {
 		this.imageWidth = bitmap.getWidth();
 		this.setImageBitmap(bitmap);
 
-	}
-
-	public void setImageDrawableToWallpaper(Drawable drawable) {
-		Bitmap bitmap = drawableToBitmap(drawable);
-
-		this.setImageBitmapToWallpaper(bitmap);
-
-	}
-
-	public void setImageDrawableToWallpaper(Bitmap bitmap) {
-		this.setImageBitmapToWallpaper(bitmap);
 	}
 
 	public static Bitmap drawableToBitmap(Drawable drawable) {

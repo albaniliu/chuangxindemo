@@ -17,7 +17,6 @@ import com.albaniliu.chuangxindemo.util.Utils;
 public class ViewPagerAdapter extends PagerAdapter {
 	private static final int BUFF_MAX = 3;
 
-	BaseImageView[] mBuffImage = new BaseImageView[BUFF_MAX];
 	private ArrayList<File> mTestfiles = new ArrayList<File>();
 
     public ViewPagerAdapter(File folder) {
@@ -52,10 +51,6 @@ public class ViewPagerAdapter extends PagerAdapter {
         return POSITION_NONE;
     }
 
-    public BaseImageView[] getBaseImageBuff() {
-    	return mBuffImage;
-    }
-
     @Override
     public int getCount() {
         return mTestfiles.size();
@@ -86,13 +81,9 @@ public class ViewPagerAdapter extends PagerAdapter {
         BaseImageView view = new BaseImageView(
             		collection.getContext(), bitmap.getWidth(), bitmap.getHeight());
         view.setImageBitmap(bitmap);
+        view.setTag(Integer.valueOf(alphaPosition));
         ((ViewPager) collection).addView(view);
         return view;
-    }
-
-    public BaseImageView getCurrentImage(int curPos) {
-    	int viewIndex = curPos % BUFF_MAX;
-    	return mBuffImage[viewIndex];
     }
 
     private void updateLayout(final int position, FrameLayout layout) {

@@ -178,9 +178,10 @@ public class HomeActivity extends Activity {
                             + "test" + i + ".jpg";
                     File file = new File(fileName);
                     if (file.exists()) {
-                        
+                        // 
+                    } else {
+                    	HTTPClient.getStreamFromUrl(cover, fileName);
                     }
-                    HTTPClient.getStreamFromUrl(cover, fileName);
                     Log.v(TAG, obj.getString("id"));
                 }
                 mHandler.sendEmptyMessageDelayed(MSG_DOWNLOAD_FINISHED, 200);

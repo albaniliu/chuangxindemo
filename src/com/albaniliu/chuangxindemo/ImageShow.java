@@ -9,13 +9,41 @@ import android.os.Environment;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.LinearLayout;
 
+import com.albaniliu.chuangxindemo.widget.LargePicGallery;
+import com.albaniliu.chuangxindemo.widget.LargePicGallery.SingleTapListner;
 import com.albaniliu.chuangxindemo.widget.ViewPagerAdapter;
 
 public class ImageShow extends Activity {
 	private String mPath = Environment.getExternalStorageDirectory() + "/liangdemo1";
 	private File mTestFolder = new File(mPath);
 	private ViewPagerAdapter mAdapter;
+	private LinearLayout mFlowBar;
+	private LargePicGallery mPager;
+	
+	private SingleTapListner mListener = new SingleTapListner() {
+
+		@Override
+		public void onSingleTapUp() {
+			int delta = mFlowBar.getHeight();
+			if (mFlowBar.getVisibility() == View.INVISIBLE
+					|| mFlowBar.getVisibility() == View.GONE) {
+				mFlowBar.setVisibility(View.VISIBLE);
+				Animation anim = new TranslateAnimation(0, 0, -delta, 0);
+				anim.setDuration(300);
+				mFlowBar.startAnimation(anim);
+			} else {
+				mFlowBar.setVisibility(View.INVISIBLE);
+				Animation anim = new TranslateAnimation(0, 0, 0, -delta);
+				anim.setDuration(300);
+				mFlowBar.startAnimation(anim);
+			}
+		}
+		
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -23,11 +51,14 @@ public class ImageShow extends Activity {
 		setContentView(R.layout.largepic);
 		
 		mAdapter = new ViewPagerAdapter(mTestFolder);
-		ViewPager pager = (ViewPager) findViewById(R.id.photo_flow);
-		pager.setOffscreenPageLimit(1);
-		pager.setPageMargin(20);
-		pager.setHorizontalFadingEdgeEnabled(true);
-		pager.setAdapter(mAdapter);
+		mPager = (LargePicGallery) findViewById(R.id.photo_flow);
+		mPager.setOffscreenPageLimit(1);
+		mPager.setPageMargin(20);
+		mPager.setHorizontalFadingEdgeEnabled(true);
+		mPager.setAdapter(mAdapter);
+		mPager.setTapUpListener(mListener);
+		mFlowBar = (LinearLayout) findViewById(R.id.flow_bar);
+		
 	}
 
 	@Override
