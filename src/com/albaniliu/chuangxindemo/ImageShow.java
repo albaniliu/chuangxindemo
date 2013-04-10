@@ -69,7 +69,7 @@ public class ImageShow extends Activity {
 	}
 
 	public void onBackClick(View view) {
-		finish();
+		onBackPressed();
 	}
 	
 	public void onSlideClick(View view) {
