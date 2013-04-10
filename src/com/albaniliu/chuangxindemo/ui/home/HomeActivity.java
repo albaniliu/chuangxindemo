@@ -144,18 +144,19 @@ public class HomeActivity extends Activity {
                     Intent it = new Intent(HomeActivity.this, ImageGridActivity.class);
                     startActivity(it);
                 }
-
+                
             });
-            ImageView image = (ImageView) classfiImage.findViewById(R.id.image_left);
-            String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
-                    + "test" + totalIndex + ".jpg";
-            Bitmap bitmap = Utils.createBitmapByFilePath(fileName, 200);
-            image.setImageBitmap(bitmap);
-            
-            TextView txt = (TextView) classfiImage.findViewById(R.id.des);
-            JSONObject obj;
-			try {
-				obj = (JSONObject) allDir.get(totalIndex);
+            try {
+            	JSONObject obj = (JSONObject) allDir.get(totalIndex);
+	            ImageView image = (ImageView) classfiImage.findViewById(R.id.image_left);
+	            String coverPath = obj.getString("cover");
+                String coverName = coverPath.substring(coverPath.lastIndexOf('/') + 1);
+	            String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
+	                    + coverName;
+	            Bitmap bitmap = Utils.createBitmapByFilePath(fileName, 200);
+	            image.setImageBitmap(bitmap);
+	            
+	            TextView txt = (TextView) classfiImage.findViewById(R.id.des);
 				txt.setText(obj.getString("name"));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -184,10 +185,7 @@ public class HomeActivity extends Activity {
                     if (file.exists()) {
                         // 
                     } else {
-                    	String tmpFileName = fileName + ".tmp";
-                    	HTTPClient.getStreamFromUrl(cover, tmpFileName);
-                    	File tmpFile = new File(tmpFileName);
-                    	tmpFile.renameTo(file);
+                    	HTTPClient.getStreamFromUrl(cover, fileName);
                     }
                 }
                 mHandler.sendEmptyMessageDelayed(MSG_DOWNLOAD_FINISHED, 200);
