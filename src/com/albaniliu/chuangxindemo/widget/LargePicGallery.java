@@ -81,6 +81,12 @@ public class LargePicGallery extends ViewPager {
 		if (imageView.isZoomIn()) {
 			return false;
 		}
-		return super.onInterceptTouchEvent(event);
+		try {
+		    return super.onInterceptTouchEvent(event);
+		} catch (IllegalArgumentException e) {
+		    return false;
+		} catch (RuntimeException e) {
+		    return false;
+		}
 	}
 }
