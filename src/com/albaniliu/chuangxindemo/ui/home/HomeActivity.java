@@ -37,7 +37,7 @@ public class HomeActivity extends Activity {
     private static String TAG = "HomeActivity";
     private boolean classfiViewSet = false;
 
-    private Thread downloadThread;
+    private static Thread downloadThread;
 
     // private YoukuGallery banner;
     private ImageView[] pointImageViews;
@@ -168,11 +168,18 @@ public class HomeActivity extends Activity {
         classfiView.addView(classfiLine);
     }
 
-    class DownloadThread extends Thread {
+    @Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		downloadThread.interrupt();
+	}
+
+	class DownloadThread extends Thread {
         public void run() {
             try {
                 allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX);
-                for (int i = 0; i < allDir.length(); i++) {
+                for (int i = 0; i < allDir.length() && !Thread.currentThread().isInterrupted(); i++) {
                     JSONObject obj = (JSONObject) allDir.get(i);
                     String cover = HTTPClient.COVER_INDEX_PREFIX + obj.getString("cover");
                     Log.v(TAG, obj.getString("cover"));
