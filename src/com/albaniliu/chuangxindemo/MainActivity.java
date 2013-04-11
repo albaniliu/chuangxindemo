@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import com.albaniliu.chuangxindemo.ui.home.HomeActivity;
 import com.albaniliu.chuangxindemo.ui.main.Splash;
 import com.albaniliu.chuangxindemo.ui.main.ViewManager;
+import com.albaniliu.chuangxindemo.util.Downloader;
 import com.albaniliu.chuangxindemo.util.SystemUiHider;
 
 /**
@@ -113,6 +114,7 @@ public class MainActivity extends Activity {
 		mHandler.sendEmptyMessageDelayed(MSG_START_ACTIVITY, 2000);
 //		mFlashThread = new PlayThread();
 //		mFlashThread.start();
+		this.startService(new Intent(this , Downloader.class));
 	}
 	
 	public class MyView extends View {

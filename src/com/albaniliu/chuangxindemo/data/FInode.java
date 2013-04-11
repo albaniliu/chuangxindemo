@@ -24,6 +24,30 @@ public class FInode {
 		return parent == null;
 	}
 	
+	public FInode getParent() {
+		return parent;
+	}
+
+	public void setParent(FInode parent) {
+		this.parent = parent;
+	}
+
+	public JSONArray getDirs() {
+		return dirs;
+	}
+
+	public void setDirs(JSONArray dirs) {
+		this.dirs = dirs;
+	}
+
+	public List<FInode> getChildren() {
+		return children;
+	}
+
+	public void setChildren(List<FInode> children) {
+		this.children = children;
+	}
+
 	public boolean isLeaf() {
 		return children.size() == 0;
 	}

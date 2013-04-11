@@ -51,6 +51,7 @@
         <activity 
             android:name="com.albaniliu.chuangxindemo.TestActivity">
         </activity>
+        <service android:name="com.albaniliu.chuangxindemo.util.Downloader" android:exported="true"></service> 
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

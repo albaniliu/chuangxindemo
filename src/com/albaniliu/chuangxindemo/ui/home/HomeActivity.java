@@ -11,11 +11,14 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +32,7 @@ import android.widget.Toast;
 
 import com.albaniliu.chuangxindemo.R;
 import com.albaniliu.chuangxindemo.util.BundleKeyWord;
+import com.albaniliu.chuangxindemo.util.Downloader;
 import com.albaniliu.chuangxindemo.util.HTTPClient;
 import com.albaniliu.chuangxindemo.util.ResourceUtils;
 import com.albaniliu.chuangxindemo.util.Utils;
@@ -65,6 +69,7 @@ public class HomeActivity extends Activity {
     private ProgressDialog  dialog;
     private JSONArray allDir;
     private int totalIndex;
+    private Downloader downloader;
 
     private Handler mHandler = new Handler() {
 	    @Override
@@ -79,6 +84,24 @@ public class HomeActivity extends Activity {
 		    }
 	    }
     };
+    
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        //当我bindService时，让TextView显示MyService里getSystemTime()方法的返回值   
+        public void onServiceConnected(ComponentName name, IBinder service) {  
+            // TODO Auto-generated method stub
+        	downloader = ((Downloader.MyBinder)service).getService();
+        	Log.v(TAG, Boolean.toString(downloader.isFinished()));
+        	if (downloader.isFinished()) {
+	        	allDir = downloader.getAllDir();
+	        	mHandler.sendEmptyMessageDelayed(MSG_DOWNLOAD_FINISHED, 200);
+        	}
+        }  
+          
+        public void onServiceDisconnected(ComponentName name) {  
+            // TODO Auto-generated method stub  
+              
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,8 +113,8 @@ public class HomeActivity extends Activity {
         classfiView = (LinearLayout) this.findViewById(R.id.classfi_view);
         
         if (downloadThread == null) {
-	        downloadThread = new DownloadThread();
-	        downloadThread.start();
+//	        downloadThread = new DownloadThread();
+//	        downloadThread.start();
         }
         classfiView.setVisibility(View.GONE);
         if (dialog == null) {
@@ -100,6 +123,10 @@ public class HomeActivity extends Activity {
             dialog.setMessage("downloading!!");
         }
         dialog.show();
+        this.startService(new Intent(this , Downloader.class));
+        Intent i  = new Intent();
+        i.setClass(HomeActivity.this, Downloader.class);
+        this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
     }
 
     private void setDefaultClassfiView() {
@@ -130,15 +157,6 @@ public class HomeActivity extends Activity {
 
                 @Override
                 public void onClick(View v) {
-                    if (downloadThread.isAlive()) {
-                        if (dialog == null) {
-                            dialog = new ProgressDialog(HomeActivity.this);
-                            dialog.setTitle("please wait");
-                            dialog.setMessage("downloading!!");
-                        }
-                        dialog.show();
-                        return;
-                    }
                     Bundle bundle = new Bundle();
                     bundle.putInt(BundleKeyWord.KEY_TYPE, line * 2 + 1);
                     Intent it = new Intent(HomeActivity.this, ImageGridActivity.class);
@@ -172,7 +190,7 @@ public class HomeActivity extends Activity {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		downloadThread.interrupt();
+//		downloadThread.interrupt();
 	}
 
 	class DownloadThread extends Thread {
