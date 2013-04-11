@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
@@ -22,27 +23,39 @@ public class ImageShow extends Activity {
 	private ViewPagerAdapter mAdapter;
 	private LinearLayout mFlowBar;
 	private LargePicGallery mPager;
+	private Handler mHanler = new Handler();
 	
 	private SingleTapListner mListener = new SingleTapListner() {
-
 		@Override
 		public void onSingleTapUp() {
-			int delta = mFlowBar.getHeight();
-			if (mFlowBar.getVisibility() == View.INVISIBLE
-					|| mFlowBar.getVisibility() == View.GONE) {
-				mFlowBar.setVisibility(View.VISIBLE);
-				Animation anim = new TranslateAnimation(0, 0, -delta, 0);
-				anim.setDuration(300);
-				mFlowBar.startAnimation(anim);
-			} else {
-				mFlowBar.setVisibility(View.INVISIBLE);
-				Animation anim = new TranslateAnimation(0, 0, 0, -delta);
-				anim.setDuration(300);
-				mFlowBar.startAnimation(anim);
-			}
+			toggleFlowBar();
 		}
-		
 	};
+	
+	private Runnable mToggleRunnable = new Runnable() {
+        @Override
+        public void run() {
+            toggleFlowBar();
+        }
+    };
+
+	private void toggleFlowBar() {
+	    int delta = mFlowBar.getHeight();
+	    if (mFlowBar.getVisibility() == View.INVISIBLE
+                || mFlowBar.getVisibility() == View.GONE) {
+            mFlowBar.setVisibility(View.VISIBLE);
+            Animation anim = new TranslateAnimation(0, 0, -delta, 0);
+            anim.setDuration(300);
+            mFlowBar.startAnimation(anim);
+            mHanler.removeCallbacks(mToggleRunnable);
+            mHanler.postDelayed(mToggleRunnable, 3000);
+        } else {
+            mFlowBar.setVisibility(View.INVISIBLE);
+            Animation anim = new TranslateAnimation(0, 0, 0, -delta);
+            anim.setDuration(300);
+            mFlowBar.startAnimation(anim);
+        }
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
