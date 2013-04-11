@@ -1,5 +1,7 @@
 package com.albaniliu.chuangxindemo;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -21,6 +24,7 @@ import android.widget.RelativeLayout;
 import com.albaniliu.chuangxindemo.ui.home.HomeActivity;
 import com.albaniliu.chuangxindemo.ui.main.Splash;
 import com.albaniliu.chuangxindemo.ui.main.ViewManager;
+import com.albaniliu.chuangxindemo.util.Downloader;
 import com.albaniliu.chuangxindemo.util.SystemUiHider;
 
 /**
@@ -37,7 +41,8 @@ public class MainActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onResume();
 		mTouch = false;
-//		mFlashThread.start();
+		mFlashThread = new PlayThread();
+		mFlashThread.start();
 	}
 
 	@Override
@@ -45,7 +50,7 @@ public class MainActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onStop();
 		Log.i("Main", "onStop");
-//		mFlashThread.interrupt();
+		mFlashThread.interrupt();
 	}
 
 	private final int MSG_START_ACTIVITY = 0;
@@ -73,6 +78,8 @@ public class MainActivity extends Activity {
 	private Thread mFlashThread;
 	int mResources[] = {R.drawable.meinv0, R.drawable.meinv1, R.drawable.meinv2, R.drawable.meinv3};
 	int index = 0;
+	
+	private MyView myView;
 
 	public Handler mHandler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
@@ -105,7 +112,9 @@ public class MainActivity extends Activity {
 		initFields();
 //		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		mHandler.sendEmptyMessageDelayed(MSG_START_ACTIVITY, 2000);
-		mFlashThread = new PlayThread();
+//		mFlashThread = new PlayThread();
+//		mFlashThread.start();
+		this.startService(new Intent(this , Downloader.class));
 	}
 	
 	public class MyView extends View {
@@ -143,8 +152,7 @@ public class MainActivity extends Activity {
 			canvas.drawBitmap(button, 100, 100, paint);
 			
 			index = ++index % mResources.length;
-//			if (!mTouch)
-				invalidate();
+//			invalidate();
 		}
 		
 	}
@@ -182,6 +190,11 @@ public class MainActivity extends Activity {
 		// unless it is serializable or parcelable. So use viewmgr to pass
 		// eventobserver to next activity
 		mViewManager.setMainActivity(this, mEventObserver);
+		String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/";
+        File file = new File(dir);
+        if (!file.exists()) {
+        	file.mkdir();
+        }
 	}
 	
 //	public void downloadThread() {
@@ -271,8 +284,8 @@ public class MainActivity extends Activity {
 //		mViewManager.showView(HomeActivity.Id, HomeActivity.class, false,
 //				bundle, true);
 
-		MyView v = new MyView(this);
-		setContentView(v);
+		myView = new MyView(this);
+		setContentView(myView);
 	}
 	
 	public void flashImage() {
@@ -284,17 +297,16 @@ public class MainActivity extends Activity {
 	class PlayThread extends Thread {
 		
 		public void run() {
-			int index = 0;
-			int r = mResources.length;
-			while(true) {
+			while(!Thread.currentThread().isInterrupted()) {
 				try {
-					mHandler.sendEmptyMessage(MSG_FLASH_IMAGE);
-					Thread.sleep(200);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					break;
 				}
+				if (myView != null)
+					myView.postInvalidate();
 			}
 		}
 	}

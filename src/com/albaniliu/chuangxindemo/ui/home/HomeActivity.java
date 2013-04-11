@@ -11,11 +11,14 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +32,7 @@ import android.widget.Toast;
 
 import com.albaniliu.chuangxindemo.R;
 import com.albaniliu.chuangxindemo.util.BundleKeyWord;
+import com.albaniliu.chuangxindemo.util.Downloader;
 import com.albaniliu.chuangxindemo.util.HTTPClient;
 import com.albaniliu.chuangxindemo.util.ResourceUtils;
 import com.albaniliu.chuangxindemo.util.Utils;
@@ -37,7 +41,7 @@ public class HomeActivity extends Activity {
     private static String TAG = "HomeActivity";
     private boolean classfiViewSet = false;
 
-    private Thread downloadThread;
+    private static Thread downloadThread;
 
     // private YoukuGallery banner;
     private ImageView[] pointImageViews;
@@ -65,6 +69,7 @@ public class HomeActivity extends Activity {
     private ProgressDialog  dialog;
     private JSONArray allDir;
     private int totalIndex;
+    private Downloader downloader;
 
     private Handler mHandler = new Handler() {
 	    @Override
@@ -79,6 +84,24 @@ public class HomeActivity extends Activity {
 		    }
 	    }
     };
+    
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        //当我bindService时，让TextView显示MyService里getSystemTime()方法的返回值   
+        public void onServiceConnected(ComponentName name, IBinder service) {  
+            // TODO Auto-generated method stub
+        	downloader = ((Downloader.MyBinder)service).getService();
+        	Log.v(TAG, Boolean.toString(downloader.isFinished()));
+        	if (downloader.isFinished()) {
+	        	allDir = downloader.getAllDir();
+	        	mHandler.sendEmptyMessageDelayed(MSG_DOWNLOAD_FINISHED, 200);
+        	}
+        }  
+          
+        public void onServiceDisconnected(ComponentName name) {  
+            // TODO Auto-generated method stub  
+              
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,8 +113,8 @@ public class HomeActivity extends Activity {
         classfiView = (LinearLayout) this.findViewById(R.id.classfi_view);
         
         if (downloadThread == null) {
-	        downloadThread = new DownloadThread();
-	        downloadThread.start();
+//	        downloadThread = new DownloadThread();
+//	        downloadThread.start();
         }
         classfiView.setVisibility(View.GONE);
         if (dialog == null) {
@@ -100,6 +123,10 @@ public class HomeActivity extends Activity {
             dialog.setMessage("downloading!!");
         }
         dialog.show();
+        this.startService(new Intent(this , Downloader.class));
+        Intent i  = new Intent();
+        i.setClass(HomeActivity.this, Downloader.class);
+        this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
     }
 
     private void setDefaultClassfiView() {
@@ -130,32 +157,24 @@ public class HomeActivity extends Activity {
 
                 @Override
                 public void onClick(View v) {
-                    if (downloadThread.isAlive()) {
-                        if (dialog == null) {
-                            dialog = new ProgressDialog(HomeActivity.this);
-                            dialog.setTitle("please wait");
-                            dialog.setMessage("downloading!!");
-                        }
-                        dialog.show();
-                        return;
-                    }
                     Bundle bundle = new Bundle();
                     bundle.putInt(BundleKeyWord.KEY_TYPE, line * 2 + 1);
                     Intent it = new Intent(HomeActivity.this, ImageGridActivity.class);
                     startActivity(it);
                 }
-
+                
             });
-            ImageView image = (ImageView) classfiImage.findViewById(R.id.image_left);
-            String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
-                    + "test" + totalIndex + ".jpg";
-            Bitmap bitmap = Utils.createBitmapByFilePath(fileName, 200);
-            image.setImageBitmap(bitmap);
-            
-            TextView txt = (TextView) classfiImage.findViewById(R.id.des);
-            JSONObject obj;
-			try {
-				obj = (JSONObject) allDir.get(totalIndex);
+            try {
+            	JSONObject obj = (JSONObject) allDir.get(totalIndex);
+	            ImageView image = (ImageView) classfiImage.findViewById(R.id.image_left);
+	            String coverPath = obj.getString("cover");
+                String coverName = coverPath.substring(coverPath.lastIndexOf('/') + 1);
+	            String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
+	                    + coverName;
+	            Bitmap bitmap = Utils.createBitmapByFilePath(fileName, 200);
+	            image.setImageBitmap(bitmap);
+	            
+	            TextView txt = (TextView) classfiImage.findViewById(R.id.des);
 				txt.setText(obj.getString("name"));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -167,22 +186,32 @@ public class HomeActivity extends Activity {
         classfiView.addView(classfiLine);
     }
 
-    class DownloadThread extends Thread {
+    @Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+//		downloadThread.interrupt();
+	}
+
+	class DownloadThread extends Thread {
         public void run() {
             try {
                 allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX);
-                for (int i = 0; i < allDir.length(); i++) {
+                for (int i = 0; i < allDir.length() && !Thread.currentThread().isInterrupted(); i++) {
                     JSONObject obj = (JSONObject) allDir.get(i);
                     String cover = HTTPClient.COVER_INDEX_PREFIX + obj.getString("cover");
+                    Log.v(TAG, obj.getString("cover"));
+                    String coverPath = obj.getString("cover");
+                    String coverName = coverPath.substring(coverPath.lastIndexOf('/') + 1);
+                    Log.v(TAG, coverName);
                     String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
-                            + "test" + i + ".jpg";
+                            + coverName;
                     File file = new File(fileName);
                     if (file.exists()) {
                         // 
                     } else {
                     	HTTPClient.getStreamFromUrl(cover, fileName);
                     }
-                    Log.v(TAG, obj.getString("id"));
                 }
                 mHandler.sendEmptyMessageDelayed(MSG_DOWNLOAD_FINISHED, 200);
             } catch (Exception e) {

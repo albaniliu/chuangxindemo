@@ -2,6 +2,7 @@ package com.albaniliu.chuangxindemo.util;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -103,13 +104,18 @@ public class HTTPClient {
             URLConnection urlConn_sourceRecommend = getJSONHttpConnection(url);
             urlConn_sourceRecommend.connect();
             inputStream = urlConn_sourceRecommend.getInputStream();
-        BufferedOutputStream bao = new BufferedOutputStream(new FileOutputStream(path));
+        String tmpFileName = path + ".tmp";
+        BufferedOutputStream bao = new BufferedOutputStream(new FileOutputStream(tmpFileName));
         byte[] temp = new byte[1024];
         int count = 0;
         while ((count = inputStream.read(temp)) >= 0) {
             bao.write(temp, 0, count);
         }
         bao.close();
+        
+        File file = new File(path);
+        File tmpFile = new File(tmpFileName);
+    	tmpFile.renameTo(file);
         return true;
     }
 
