@@ -27,12 +27,14 @@
         <activity
             android:name="com.albaniliu.chuangxindemo.ui.home.HomeActivity"
             android:theme="@android:style/Theme.NoTitleBar"
-            android:screenOrientation="sensor" >
+            android:screenOrientation="sensor"
+            android:configChanges="orientation|keyboardHidden" >
         </activity>
         <activity
             android:name="com.albaniliu.chuangxindemo.ui.home.ImageGridActivity"
             android:theme="@android:style/Theme.NoTitleBar"
-            android:screenOrientation="sensor" >
+            android:screenOrientation="sensor"
+            android:configChanges="orientation|keyboardHidden" >
         </activity>
         
         <activity

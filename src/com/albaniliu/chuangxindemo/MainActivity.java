@@ -1,5 +1,7 @@
 package com.albaniliu.chuangxindemo;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -185,6 +188,11 @@ public class MainActivity extends Activity {
 		// unless it is serializable or parcelable. So use viewmgr to pass
 		// eventobserver to next activity
 		mViewManager.setMainActivity(this, mEventObserver);
+		String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/";
+        File file = new File(dir);
+        if (!file.exists()) {
+        	file.mkdir();
+        }
 	}
 	
 //	public void downloadThread() {
