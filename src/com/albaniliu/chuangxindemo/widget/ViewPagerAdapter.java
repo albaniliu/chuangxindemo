@@ -13,13 +13,16 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.albaniliu.chuangxindemo.util.Utils;
+import com.albaniliu.chuangxindemo.widget.LargePicGallery.SingleTapListner;
 
 public class ViewPagerAdapter extends PagerAdapter {
 	private static final int BUFF_MAX = 3;
 
 	private ArrayList<File> mTestfiles = new ArrayList<File>();
+	private SingleTapListner mListener;
 
-    public ViewPagerAdapter(File folder) {
+    public ViewPagerAdapter(File folder, SingleTapListner listener) {
+    	mListener = listener;
     	if (folder.isDirectory()) {
     		File[] files = folder.listFiles(new FileFilter() {
                 @Override
@@ -61,7 +64,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public Object instantiateItem(View collection, int alphaPosition) {
+    public Object instantiateItem(View collection, int position) {
     	/*
         boolean inCollection = true;
         Bitmap bitmap = Utils.createBitmapByFilePath(mTestfiles.get(alphaPosition).getPath(), 1024);
@@ -77,11 +80,11 @@ public class ViewPagerAdapter extends PagerAdapter {
         }
         return mBuffImage[viewIndex];
         */
-    	Bitmap bitmap = Utils.createBitmapByFilePath(mTestfiles.get(alphaPosition).getPath(), 1024);
-        BaseImageView view = new BaseImageView(
-            		collection.getContext(), bitmap.getWidth(), bitmap.getHeight());
+    	Bitmap bitmap = Utils.createBitmapByFilePath(mTestfiles.get(position).getPath(), 1024);
+    	BaseImageView view = new BaseImageView(collection.getContext());
+    	view.setTapUpListener(mListener);
         view.setImageBitmap(bitmap);
-        view.setTag(Integer.valueOf(alphaPosition));
+        view.setTag(Integer.valueOf(position));
         ((ViewPager) collection).addView(view);
         return view;
     }
