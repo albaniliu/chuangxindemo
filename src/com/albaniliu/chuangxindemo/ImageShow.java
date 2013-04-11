@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
@@ -50,15 +49,13 @@ public class ImageShow extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.largepic);
 		
-		mAdapter = new ViewPagerAdapter(mTestFolder);
+		mAdapter = new ViewPagerAdapter(mTestFolder, mListener);
 		mPager = (LargePicGallery) findViewById(R.id.photo_flow);
 		mPager.setOffscreenPageLimit(1);
 		mPager.setPageMargin(20);
 		mPager.setHorizontalFadingEdgeEnabled(true);
 		mPager.setAdapter(mAdapter);
-		mPager.setTapUpListener(mListener);
 		mFlowBar = (LinearLayout) findViewById(R.id.flow_bar);
-		
 	}
 
 	@Override

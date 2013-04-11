@@ -1,479 +1,318 @@
-/**  
- * BaseImageView.java
- * @version 1.0
- * @createTime 2011-12-9 下午03:12:30
- * From android ImageViewTouchBase.java in Gallery
- */
+
 package com.albaniliu.chuangxindemo.widget;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.PixelFormat;
-import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
-import android.os.Handler;
+import android.graphics.PointF;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.AnimationSet;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.widget.ImageView;
 
+import com.albaniliu.chuangxindemo.widget.LargePicGallery.SingleTapListner;
+
 public class BaseImageView extends ImageView {
-	@SuppressWarnings("unused")
-	private static final String TAG = "ImageViewTouchBase";
 
-	// This is the base transformation which is used to show the image
-	// initially. The current computation for this shows the image in
-	// it's entirety, letterboxing as needed. One could choose to
-	// show the image as cropped instead.
-	//
-	// This matrix is recomputed when we go from the thumbnail image to
-	// the full size image.
-	protected Matrix mBaseMatrix = new Matrix();
+	private float maxScale = 3f;
+	private float minScale = 1f;
 
-	// This is the supplementary transformation which reflects what
-	// the user has done in terms of zooming and panning.
-	//
-	// This matrix remains the same when we go from the thumbnail image
-	// to the full size image.
-	protected Matrix mSuppMatrix = new Matrix();
+	private enum State {
+		INIT, DRAG, ZOOM
+	}
 
-	// This is the final matrix which is computed as the concatentation
-	// of the base matrix and the supplementary matrix.
-	private final Matrix mDisplayMatrix = new Matrix();
+	private State state;
 
-	// Temporary buffer used for getting the values out of a matrix.
-	private final float[] mMatrixValues = new float[9];
+	private Matrix matrix;
+	private float[] finalTransformation = new float[9];
+	private PointF last = new PointF();
+	private float currentScale = 1f;
 
-	// The current bitmap being displayed.
-	// protected final RotateBitmap mBitmapDisplayed = new RotateBitmap(null);
-	protected Bitmap image = null;
+	private int viewWidth;
+	private int viewHeight;
+	private float afterScaleDrawableWidth;
+	private float afterScaleDrawableHeight;
 
-	int mThisWidth = -1, mThisHeight = -1;
+	private ScaleGestureDetector scaleDetector;
 
-	float mMaxZoom = 6.0f;// 最大缩放比例
-	float mMinZoom;// 最小缩放比例
-
-	private int imageWidth = 0;// 图片的原始宽度
-	private int imageHeight = 0;// 图片的原始高度
-
-	private float scaleRate;// 图片适应屏幕的缩放比例
-
-	public boolean isZoom = true;
-
-	public static BaseImageView instance = null;
-	public int mScreenWidth;
-	public int mScreenHeight;
-
-	// public void
-
-	public BaseImageView(Context context, int imageWidth, int imageHeight) {
+	private GestureDetector doubleTapDetecture;
+	
+	private SingleTapListner mTapUpListener;
+	
+	public BaseImageView(Context context) {
 		super(context);
-		this.imageHeight = imageHeight;
-		this.imageWidth = imageWidth;
-		init(context);
-		instance = this;
+		setUp(context);
 	}
 
 	public BaseImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		this.imageHeight = 1;
-		this.imageWidth = 1;
-		init(context);
-		instance = this;
+		setUp(context);
 	}
 
-	/**
-	 * 计算图片要适应屏幕需要缩放的比例
-	 */
-	private void arithScaleRate() {
-		float scaleWidth = mScreenWidth / (float) imageWidth;
-		float scaleHeight = mScreenHeight / (float) imageHeight;
-		scaleRate = Math.min(scaleWidth, scaleHeight);
+	public BaseImageView(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		setUp(context);
 	}
 
-	public float getScaleRate() {
-		return scaleRate;
-	}
-
-	public float getFullScreenScaleRate() {
-		return mScreenHeight / (float) imageHeight;
-	}
-
-	public float getFullWithScreenScaleRate() {
-		return mScreenWidth / (float) this.imageWidth;
-	}
-
-	public int getImageWidth() {
-		return imageWidth;
-	}
-
-	public void setImageWidth(int imageWidth) {
-		this.imageWidth = imageWidth;
-	}
-
-	public int getImageHeight() {
-		return imageHeight;
-	}
-
-	public void setImageHeight(int imageHeight) {
-		this.imageHeight = imageHeight;
+	public void setTapUpListener(SingleTapListner listener) {
+		mTapUpListener = listener;
 	}
 
 	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-			event.startTracking();
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		viewWidth = MeasureSpec.getSize(widthMeasureSpec);
+		viewHeight = MeasureSpec.getSize(heightMeasureSpec);
+
+		// Set up drawable at first load
+		if (hasDrawable()) {
+			resetImage();
+		}
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		scaleDetector.onTouchEvent(event);
+		doubleTapDetecture.onTouchEvent(event);
+
+		PointF current = new PointF(event.getX(), event.getY());
+
+		switch (event.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			last.set(current);
+			return true;
+
+		case MotionEvent.ACTION_MOVE:
+			if (state == State.DRAG) {
+				drag(current);
+				last.set(current);
+				setImageMatrix(matrix);
+				invalidate();
+			} else if (currentScale > 1) {
+				state = State.DRAG;
+				drag(current);
+				last.set(current);
+				setImageMatrix(matrix);
+				invalidate();
+			}
+			break;
+
+		case MotionEvent.ACTION_UP:
+			state = State.INIT;
+			break;
+
+		case MotionEvent.ACTION_POINTER_UP:
+			state = State.INIT;
+			break;
+		}
+		
+		return isZoomIn();
+	}
+
+	/**
+	 * Set up the class. Method called by constructors.
+	 * 
+	 * @param context
+	 */
+	private void setUp(Context context) {
+		super.setClickable(false);
+		matrix = new Matrix();
+		state = State.INIT;
+		scaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+		doubleTapDetecture = new GestureDetector(context, new GestureListener());
+		setScaleType(ScaleType.MATRIX);
+	}
+
+	private void resetImage() {
+
+		// Scale Image
+		float scale = getScaleForDrawable();
+		matrix.setScale(scale, scale);
+
+		// Center Image
+		float marginY = ((float) viewHeight - (scale * getDrawable().getIntrinsicHeight())) / 2;
+		float marginX = ((float) viewWidth - (scale * getDrawable().getIntrinsicWidth())) / 2;
+		matrix.postTranslate(marginX, marginY);
+
+		afterScaleDrawableWidth = (float) viewWidth - 2 * marginX;
+		afterScaleDrawableHeight = (float) viewHeight - 2 * marginY;
+
+		setImageMatrix(matrix);
+	}
+
+	/**
+	 * Getter and setter for max/min scale. Default are min=1 and max=3
+	 */
+
+	public float getMaxScale() {
+		return maxScale;
+	}
+
+	public void setMaxScale(float maxScale) {
+		this.maxScale = maxScale;
+	}
+
+	public float getMinScale() {
+		return minScale;
+	}
+
+	public void setMinScale(float minScale) {
+		this.minScale = minScale;
+	}
+
+	/**
+	 * Drag method
+	 * 
+	 * @param current
+	 *            Current point to drag to.
+	 */
+	private void drag(PointF current) {
+		Log.d(VIEW_LOG_TAG, "drag current.x " + current.x + " current.y " + current.y);
+		float deltaX = getMoveDraggingDelta(current.x - last.x, viewWidth, afterScaleDrawableWidth * currentScale);
+		float deltaY = getMoveDraggingDelta(current.y - last.y, viewHeight, afterScaleDrawableHeight * currentScale);
+		matrix.postTranslate(deltaX, deltaY);
+		limitDrag();
+	}
+
+	/**
+	 * Scale method for zooming
+	 * 
+	 * @param focusX
+	 *            X of center of scale
+	 * @param focusY
+	 *            Y of center of scale
+	 * @param scaleFactor
+	 *            scale factor to zoom in/out
+	 */
+	private void scale(float focusX, float focusY, float scaleFactor) {
+		float lastScale = currentScale;
+		float newScale = lastScale * scaleFactor;
+
+		// Calculate next scale with resetting to max or min if required
+		if (newScale > maxScale) {
+			currentScale = maxScale;
+			scaleFactor = maxScale / lastScale;
+		} else if (newScale < minScale) {
+			currentScale = minScale;
+			scaleFactor = minScale / lastScale;
+		} else {
+			currentScale = newScale;
+		}
+
+		// Do scale
+		if (requireCentering()) {
+			matrix.postScale(scaleFactor, scaleFactor, (float) viewWidth / 2, (float) viewHeight / 2);
+		} else
+			matrix.postScale(scaleFactor, scaleFactor, focusX, focusY);
+
+		limitDrag();
+		invalidate();
+	}
+
+	/**
+	 * This method permits to keep drag and zoom inside the drawable. It makes sure the drag is staying in bound.
+	 */
+	private void limitDrag() {
+		matrix.getValues(finalTransformation);
+		float finalXTransformation = finalTransformation[Matrix.MTRANS_X];
+		float finalYTransformation = finalTransformation[Matrix.MTRANS_Y];
+
+		float deltaX = getScaleDraggingDelta(finalXTransformation, viewWidth, afterScaleDrawableWidth * currentScale);
+		float deltaY = getScaleDraggingDelta(finalYTransformation, viewHeight, afterScaleDrawableHeight * currentScale);
+
+		matrix.postTranslate(deltaX, deltaY);
+	}
+
+	private float getScaleDraggingDelta(float delta, float viewSize, float contentSize) {
+		float minTrans = 0;
+		float maxTrans = 0;
+
+		if (contentSize <= viewSize) {
+			maxTrans = viewSize - contentSize;
+		} else {
+			minTrans = viewSize - contentSize;
+		}
+
+		if (delta < minTrans)
+			return minTrans - delta;
+		else if (delta > maxTrans)
+			return maxTrans - delta;
+		else
+			return 0;
+	}
+
+	// Check if dragging is still possible if so return delta otherwise return 0 (do nothing)
+	private float getMoveDraggingDelta(float delta, float viewSize, float contentSize) {
+		if (contentSize <= viewSize) {
+			return 0;
+		}
+		return delta;
+	}
+
+	private float getScaleForDrawable() {
+		float scaleX = (float) viewWidth / (float) getDrawable().getIntrinsicWidth();
+		float scaleY = (float) viewHeight / (float) getDrawable().getIntrinsicHeight();
+		return Math.min(scaleX, scaleY);
+	}
+
+	private boolean hasDrawable() {
+		return getDrawable() != null && getDrawable().getIntrinsicWidth() != 0 && getDrawable().getIntrinsicHeight() != 0;
+	}
+
+	private boolean requireCentering() {
+		return afterScaleDrawableWidth * currentScale <= (float) viewWidth || afterScaleDrawableHeight * currentScale <= (float) viewHeight;
+	}
+
+	private boolean isZoom() {
+		return currentScale != 1f;
+	}
+	
+	public boolean isZoomIn() {
+		return currentScale > 1f || state == State.DRAG ;
+	}
+
+	/**
+	 * Listener for detecting scale.
+	 * 
+	 * @author jmartinez
+	 */
+	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+		@Override
+		public boolean onScaleBegin(ScaleGestureDetector detector) {
+			state = State.ZOOM;
 			return true;
 		}
-		return super.onKeyDown(keyCode, event);
+
+		@Override
+		public boolean onScale(ScaleGestureDetector detector) {
+			scale(detector.getFocusX(), detector.getFocusY(), detector.getScaleFactor());
+			return true;
+		}
 	}
 
-	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK && event.isTracking()
-				&& !event.isCanceled()) {
-			if (getScale() > 1.0f) {
-				// If we're zoomed in, pressing Back jumps out to show the
-				// entire image, otherwise Back returns the user to the gallery.
-				zoomTo(1.0f);
-				return true;
+	private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+		@Override
+		public boolean onDoubleTap(MotionEvent e) {
+			if (isZoom()) {
+				resetImage();
+				currentScale = 1f;
+				state = State.INIT;
+
+			} else {
+				scale(e.getX(), e.getY(), maxScale);
 			}
+			return true;
 		}
-		return super.onKeyUp(keyCode, event);
-	}
 
-	protected Handler mHandler = new Handler();
-
-	@Override
-	public void setImageBitmap(Bitmap bitmap) {
-		if (bitmap == null) {
-			super.setImageBitmap(null);
-		} else {
-			this.imageHeight = bitmap.getHeight();
-			this.imageWidth = bitmap.getWidth();
-			super.setImageBitmap(bitmap);
-			try {
-				BaseImageView.this.clearAnimation();
-				image = bitmap;
-				// 计算适应屏幕的比例
-				arithScaleRate();
-				zoomTo(scaleRate, mScreenWidth / 2f, mScreenHeight / 2f, 10f);
-				layoutToCenter();
-				AnimationSet animSet = new AnimationSet(false);
-				AlphaAnimation alphaAnim = new AlphaAnimation(0, 1);
-				animSet.addAnimation(alphaAnim);
-				animSet.setDuration(200);
-				BaseImageView.this.setAnimation(animSet);
-				BaseImageView.this.setVisibility(View.VISIBLE);
-			} catch (Exception e) {
+		@Override
+		public boolean onSingleTapUp(MotionEvent e) {
+			if (mTapUpListener != null) {
+				mTapUpListener.onSingleTapUp();
 			}
+			return true;
 		}
 	}
 
-	// Center as much as possible in one or both axis. Centering is
-	// defined as follows: if the image is scaled down below the
-	// view's dimensions then center it (literally). If the image
-	// is scaled larger than the view and is translated out of view
-	// then translate it back into view (i.e. eliminate black bars).
-	protected void center(boolean horizontal, boolean vertical) {
-		if (image == null) {
-			return;
-		}
-
-		Matrix m = getImageViewMatrix();
-
-		RectF rect = new RectF(0, 0, image.getWidth(), image.getHeight());
-		m.mapRect(rect);
-
-		float height = rect.height();
-		float width = rect.width();
-
-		float deltaX = 0, deltaY = 0;
-
-		if (vertical) {
-			int viewHeight = getHeight();
-			if (height < viewHeight) {
-				deltaY = (viewHeight - height) / 2 - rect.top;
-			} else if (rect.top > 0) {
-				deltaY = -rect.top;
-			} else if (rect.bottom < viewHeight) {
-				deltaY = getHeight() - rect.bottom;
-			}
-		}
-
-		if (horizontal) {
-			int viewWidth = getWidth();
-			if (width < viewWidth) {
-				deltaX = (viewWidth - width) / 2 - rect.left;
-			} else if (rect.left > 0) {
-				deltaX = -rect.left;
-			} else if (rect.right < viewWidth) {
-				deltaX = viewWidth - rect.right;
-			}
-		}
-
-		postTranslate(deltaX, deltaY);
-		setImageMatrix(getImageViewMatrix());
-	}
-
-	private void init(Context context) {
-		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-		mScreenWidth = metrics.widthPixels;
-		mScreenHeight = metrics.heightPixels;
-		setScaleType(ImageView.ScaleType.MATRIX);
-		this.clearAnimation();
-	}
-
-	/**
-	 * 设置图片居中显示
-	 */
-	public void layoutToCenter() {
-		// 正在显示的图片实际宽高
-		float width = imageWidth * getScale();
-		float height = imageHeight * getScale();
-
-		// 空白区域宽高
-		float fill_width = mScreenWidth - width;
-		float fill_height = mScreenHeight - height;
-
-		// 需要移动的距离
-		float tran_width = 0f;
-		float tran_height = 0f;
-
-		if (fill_width > 0)
-			tran_width = fill_width / 2;
-		if (fill_height > 0)
-			tran_height = fill_height / 2;
-
-		postTranslate(tran_width, tran_height);
-		setImageMatrix(getImageViewMatrix());
-	}
-
-	protected float getValue(Matrix matrix, int whichValue) {
-		matrix.getValues(mMatrixValues);
-		mMinZoom = (mScreenWidth / 2f) / imageWidth;
-
-		return mMatrixValues[whichValue];
-	}
-
-	// Get the scale factor out of the matrix.
-	protected float getScale(Matrix matrix) {
-		return getValue(matrix, Matrix.MSCALE_X);
-	}
-
-	public float getScale() {
-		return getScale(mSuppMatrix);
-	}
-
-	// Combine the base matrix and the supp matrix to make the final matrix.
-	protected Matrix getImageViewMatrix() {
-		// The final matrix is computed as the concatentation of the base matrix
-		// and the supplementary matrix.
-		mDisplayMatrix.set(mBaseMatrix);
-		mDisplayMatrix.postConcat(mSuppMatrix);
-		return mDisplayMatrix;
-	}
-
-	static final float SCALE_RATE = 1.25F;
-
-	// Sets the maximum zoom, which is a scale relative to the base matrix. It
-	// is calculated to show the image at 400% zoom regardless of screen or
-	// image orientation. If in the future we decode the full 3 megapixel image,
-	// rather than the current 1024x768, this should be changed down to 200%.
-	protected float maxZoom() {
-		if (image == null) {
-			return 1F;
-		}
-
-		float fw = (float) image.getWidth() / (float) mThisWidth;
-		float fh = (float) image.getHeight() / (float) mThisHeight;
-		float max = Math.max(fw, fh) * 4;
-		return max;
-	}
-
-	protected void zoomTo(float scale, float centerX, float centerY) {
-		if (scale > mMaxZoom) {
-			scale = mMaxZoom;
-		} else if (scale < mMinZoom) {
-			scale = mMinZoom;
-		}
-
-		float oldScale = getScale();
-		float deltaScale = scale / oldScale;
-
-		mSuppMatrix.postScale(deltaScale, deltaScale, centerX, centerY);
-		setImageMatrix(getImageViewMatrix());
-		center(true, true);
-	}
-
-	protected void zoomTo(final float scale, final float centerX,
-			final float centerY, final float durationMs) {
-		final float incrementPerMs = (scale - getScale()) / durationMs;
-		final float oldScale = getScale();
-		final long startTime = System.currentTimeMillis();
-
-		mHandler.post(new Runnable() {
-			public void run() {
-				// this.setVisibility(View.INVISIBLE);
-				long now = System.currentTimeMillis();
-				float currentMs = Math.min(durationMs, now - startTime);
-				float target = oldScale + (incrementPerMs * currentMs);
-				zoomTo(target, centerX, centerY);
-				if (currentMs < durationMs) {
-					mHandler.post(this);
-				}
-			}
-		});
-	}
-
-	protected void zoomTo(float scale) {
-		float cx = getWidth() / 2F;
-		float cy = getHeight() / 2F;
-
-		zoomTo(scale, cx, cy);
-	}
-
-	protected void zoomToPoint(float scale, float pointX, float pointY) {
-		float cx = getWidth() / 2F;
-		float cy = getHeight() / 2F;
-
-		panBy(cx - pointX, cy - pointY);
-		zoomTo(scale, cx, cy);
-	}
-
-	protected void zoomIn() {
-		zoomIn(SCALE_RATE);
-	}
-
-	protected void zoomOut() {
-		zoomOut(SCALE_RATE);
-	}
-
-	protected void zoomIn(float rate) {
-		if (getScale() >= mMaxZoom) {
-			return; // Don't let the user zoom into the molecular level.
-		} else if (getScale() <= mMinZoom) {
-			return;
-		}
-		if (image == null) {
-			return;
-		}
-
-		float cx = getWidth() / 2F;
-		float cy = getHeight() / 2F;
-
-		mSuppMatrix.postScale(rate, rate, cx, cy);
-		setImageMatrix(getImageViewMatrix());
-	}
-
-	protected void zoomOut(float rate) {
-		if (image == null) {
-			return;
-		}
-
-		float cx = getWidth() / 2F;
-		float cy = getHeight() / 2F;
-
-		// Zoom out to at most 1x.
-		Matrix tmp = new Matrix(mSuppMatrix);
-		tmp.postScale(1F / rate, 1F / rate, cx, cy);
-
-		if (getScale(tmp) < 1F) {
-			mSuppMatrix.setScale(1F, 1F, cx, cy);
-		} else {
-			mSuppMatrix.postScale(1F / rate, 1F / rate, cx, cy);
-		}
-		setImageMatrix(getImageViewMatrix());
-		center(true, true);
-	}
-
-	public void postTranslate(float dx, float dy) {
-		mSuppMatrix.postTranslate(dx, dy);
-		setImageMatrix(getImageViewMatrix());
-	}
-
-	float _dy = 0.0f;
-
-	protected void postTranslateDur(final float dy, final float durationMs) {
-		_dy = 0.0f;
-		final float incrementPerMs = dy / durationMs;
-		final long startTime = System.currentTimeMillis();
-		mHandler.post(new Runnable() {
-			public void run() {
-				long now = System.currentTimeMillis();
-				float currentMs = Math.min(durationMs, now - startTime);
-
-				postTranslate(0, incrementPerMs * currentMs - _dy);
-				_dy = incrementPerMs * currentMs;
-
-				if (currentMs < durationMs) {
-					mHandler.post(this);
-				}
-			}
-		});
-	}
-
-	protected void panBy(float dx, float dy) {
-		postTranslate(dx, dy);
-		setImageMatrix(getImageViewMatrix());
-	}
-
-	public void setImageOfDrawable(Drawable drawable) {
-		Bitmap bitmap = drawableToBitmap(drawable);
-		this.imageHeight = bitmap.getHeight();
-		this.imageWidth = bitmap.getWidth();
-		mSuppMatrix = new Matrix();
-		this.setImageBitmap(bitmap);
-
-	}
-
-	public void setImageOfDrawable(Bitmap bitmap) {
-		this.imageHeight = bitmap.getHeight();
-		this.imageWidth = bitmap.getWidth();
-		mSuppMatrix = new Matrix();
-		this.setImageBitmap(bitmap);
-
-	}
-
-	public void setImageOfDrawableToFull(Drawable drawable) {
-		Bitmap bitmap = drawableToBitmap(drawable);
-		isZoom = false;
-		mSuppMatrix = new Matrix();
-		this.imageHeight = bitmap.getHeight();
-		this.imageWidth = bitmap.getWidth();
-		this.setImageBitmap(bitmap);
-
-	}
-
-	public void setImageOfDrawableToFull(Bitmap bitmap) {
-		isZoom = false;
-		mSuppMatrix = new Matrix();
-		this.imageHeight = bitmap.getHeight();
-		this.imageWidth = bitmap.getWidth();
-		this.setImageBitmap(bitmap);
-
-	}
-
-	public static Bitmap drawableToBitmap(Drawable drawable) {
-		// 取 drawable 的长宽
-		int w = drawable.getIntrinsicWidth();
-		int h = drawable.getIntrinsicHeight();
-
-		// 取 drawable 的颜色格式
-		Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888
-				: Bitmap.Config.RGB_565;
-		// 建立对应 bitmap
-		Bitmap bitmap = Bitmap.createBitmap(w, h, config);
-		// 建立对应 bitmap 的画布
-		Canvas canvas = new Canvas(bitmap);
-		drawable.setBounds(0, 0, w, h);
-		// 把 drawable 内容画到画布中
-		drawable.draw(canvas);
-		return bitmap;
-	}
 }
