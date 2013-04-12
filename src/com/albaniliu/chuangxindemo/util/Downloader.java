@@ -28,6 +28,7 @@ public class Downloader extends Service {
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
+		allDir = new JSONArray();
 		if (downloadThread == null) {
 	        downloadThread = new DownloadThread();
 	        downloadThread.start();

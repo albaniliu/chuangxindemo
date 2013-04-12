@@ -126,6 +126,7 @@ public class HomeActivity extends Activity {
         this.startService(new Intent(this , Downloader.class));
         Intent i  = new Intent();
         i.setClass(HomeActivity.this, Downloader.class);
+        allDir = new JSONArray();
         this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
     }
 
