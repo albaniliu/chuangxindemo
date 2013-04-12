@@ -2,37 +2,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_weight="1"
     android:background="@color/black"
     android:baselineAligned="false"
     android:gravity="center"
-    android:layout_weight="1"
     android:orientation="horizontal" >
 
     <FrameLayout
         android:id="@+id/left"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="13px"
-        android:layout_marginLeft="12px"
-        android:layout_marginRight="13px"
-        android:layout_marginTop="13px"
+        android:layout_marginBottom="11px"
+        android:layout_marginLeft="20px"
+        android:layout_marginRight="20px"
+        android:layout_marginTop="12px"
         android:layout_weight="1" >
 
         <ImageView
             android:id="@+id/image_left"
-            android:layout_width="288px"
-            android:layout_height="288px"
+            android:layout_width="344px"
+            android:layout_height="344px"
             android:contentDescription="@string/classfi_line_left"
-            android:src="@drawable/grid_item_bg"
-            android:scaleType="fitXY" />
+            android:scaleType="fitXY"
+            android:src="@drawable/grid_item_bg" />
 
         <LinearLayout
             android:id="@+id/des_layout"
             android:layout_width="150dp"
             android:layout_height="30dp"
             android:layout_gravity="bottom"
-            android:gravity="center"
-            android:background="#77000000" >
+            android:background="#77000000"
+            android:gravity="center" >
 
             <TextView
                 android:id="@+id/des"
@@ -46,6 +46,6 @@
                 android:textSize="14sp" >
             </TextView>
         </LinearLayout>
-
     </FrameLayout>
+
 </LinearLayout>

@@ -81,7 +81,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
 		int screenHeight = getWindow().getWindowManager().getDefaultDisplay()
 				.getHeight();
 		int num = 2;
-		if (screenWidth > screenHeight) num = 3;
+		if (screenWidth > screenHeight) num = 4;
 		for (int i = 0; i < num; i++) {
 			LinearLayout classfiImage = (LinearLayout) getLayoutInflater().inflate(R.layout.classfi_image, null);
 			FrameLayout frame = (FrameLayout) classfiImage.findViewById(R.id.left);
