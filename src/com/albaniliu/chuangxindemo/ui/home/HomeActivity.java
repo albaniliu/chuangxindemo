@@ -147,7 +147,7 @@ public class HomeActivity extends Activity {
                 .getHeight();
         int num = 2;
         if (screenWidth > screenHeight)
-            num = 3;
+            num = 4;
         for (int i = 0; i < num && totalIndex < allDir.length(); i++, totalIndex++) {
             LinearLayout classfiImage = (LinearLayout) getLayoutInflater().inflate(
                     R.layout.classfi_image, null);
