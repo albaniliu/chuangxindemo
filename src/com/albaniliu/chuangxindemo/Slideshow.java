@@ -22,6 +22,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Xfermode;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
@@ -154,6 +156,10 @@ public class Slideshow extends SurfaceView implements SurfaceHolder.Callback {
                             mTimeElapsed = 0;
                         }
                     } else {
+                    	Paint clear = new Paint();
+                    	clear.setXfermode(new PorterDuffXfermode(Mode.CLEAR));
+                    	c.drawPaint(clear);
+                    	
                         paint.setColorFilter(null);
                         c.drawBitmap(mBitmap, mRect, mFrameRect, paint);
                     }
@@ -212,7 +218,7 @@ public class Slideshow extends SurfaceView implements SurfaceHolder.Callback {
         Rect rect = new Rect();
         float viewAspect = (float) viewHeight / viewWidth;
         float newWidth = bitmapWidth * viewAspect;
-        if (bitmapHeight < newWidth) {
+        if (bitmapHeight > newWidth) {
             // Vertically constrained.
             newWidth = bitmapHeight / viewAspect;
             rect.set((int) (bitmapWidth / 2 - newWidth / 2), 0, (int) (bitmapWidth / 2 + newWidth / 2), bitmapHeight);
