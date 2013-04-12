@@ -11,57 +11,48 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <RelativeLayout
-        android:id="@+id/wrapper2"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#00000000"
-        android:descendantFocusability="blocksDescendants" >
-
-        <ProgressBar
-            android:id="@+id/loading_large_pic"
-            style="?android:attr/progressBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:focusable="false"
-            android:visibility="gone" >
-        </ProgressBar>
-    </RelativeLayout>
-    
-    <LinearLayout 
+    <LinearLayout
         android:id="@+id/flow_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="9px"
-        android:layout_marginBottom="9px"
         android:layout_gravity="top"
-        android:visibility="invisible" >
-        <ImageView 
+        android:paddingBottom="9px"
+        android:paddingTop="9px"
+        android:orientation="horizontal"
+        android:background="#88000000" >
+
+        <ImageView
             android:layout_width="64px"
             android:layout_height="64px"
             android:layout_marginLeft="40px"
             android:src="@drawable/ic_launcher" />
-        
-        <ImageView 
+
+        <ImageView
             android:layout_width="64px"
             android:layout_height="64px"
             android:layout_marginLeft="20px"
             android:src="@drawable/ic_launcher" />
-        
-        <View 
+
+        <View
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.0"/>
-        
-        <Button 
+            android:layout_weight="1.0" />
+
+        <Button
             android:layout_width="64px"
             android:layout_height="64px"
             android:layout_marginRight="40px"
             android:onClick="onSlideClick"
-            android:textSize="10sp"
-            android:text="@string/btn_text_slideshow"/>
+            android:text="@string/btn_text_slideshow"
+            android:textSize="10sp" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/footer_bar"
+        android:layout_width="match_parent"
+        android:layout_height="50px"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:textSize="20px" />
 
 </FrameLayout>

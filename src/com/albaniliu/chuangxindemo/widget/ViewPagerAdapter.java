@@ -89,8 +89,14 @@ public class ViewPagerAdapter extends PagerAdapter {
         return view;
     }
 
-    private void updateLayout(final int position, FrameLayout layout) {
-    	
+    public String getName(int index) {
+    	int size = mTestfiles.size();
+    	if (index >= size) {
+    		return "";
+    	}
+    	String path = mTestfiles.get(index).getPath();
+    	int start = path.lastIndexOf('/');
+    	return path.substring(start + 1) + "  " + (index + 1) + "/" + getCount(); 
     }
 
     @Override

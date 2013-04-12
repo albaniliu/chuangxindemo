@@ -7,11 +7,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.albaniliu.chuangxindemo.widget.LargePicGallery;
 import com.albaniliu.chuangxindemo.widget.LargePicGallery.SingleTapListner;
@@ -22,6 +24,7 @@ public class ImageShow extends Activity {
 	private File mTestFolder = new File(mPath);
 	private ViewPagerAdapter mAdapter;
 	private LinearLayout mFlowBar;
+	private TextView mFooter;
 	private LargePicGallery mPager;
 	private Handler mHanler = new Handler();
 	
@@ -41,19 +44,29 @@ public class ImageShow extends Activity {
 
 	private void toggleFlowBar() {
 	    int delta = mFlowBar.getHeight();
+	    mHanler.removeCallbacks(mToggleRunnable);
+
 	    if (mFlowBar.getVisibility() == View.INVISIBLE
                 || mFlowBar.getVisibility() == View.GONE) {
             mFlowBar.setVisibility(View.VISIBLE);
+            mFooter.setVisibility(View.VISIBLE);
             Animation anim = new TranslateAnimation(0, 0, -delta, 0);
             anim.setDuration(300);
             mFlowBar.startAnimation(anim);
-            mHanler.removeCallbacks(mToggleRunnable);
-            mHanler.postDelayed(mToggleRunnable, 3000);
+            Animation animDown = new TranslateAnimation(0, 0, delta, 0);
+            animDown.setDuration(300);
+            mFlowBar.startAnimation(animDown);
+            mHanler.postDelayed(mToggleRunnable, 5000);
         } else {
             mFlowBar.setVisibility(View.INVISIBLE);
+            mFooter.setVisibility(View.INVISIBLE);
             Animation anim = new TranslateAnimation(0, 0, 0, -delta);
             anim.setDuration(300);
             mFlowBar.startAnimation(anim);
+            
+            Animation animDown = new TranslateAnimation(0, 0, 0, delta);
+            animDown.setDuration(300);
+            mFooter.startAnimation(animDown);
         }
 	}
 
@@ -68,7 +81,18 @@ public class ImageShow extends Activity {
 		mPager.setPageMargin(20);
 		mPager.setHorizontalFadingEdgeEnabled(true);
 		mPager.setAdapter(mAdapter);
+		mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				mFooter.setText(mAdapter.getName(position));
+			}
+		});
 		mFlowBar = (LinearLayout) findViewById(R.id.flow_bar);
+		
+		mFooter = (TextView) findViewById(R.id.footer_bar);
+		mFooter.setText(mAdapter.getName(0));
+		
+		mHanler.postDelayed(mToggleRunnable, 5000);
 	}
 
 	@Override
