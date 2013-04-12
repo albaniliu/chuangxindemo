@@ -55,7 +55,7 @@ public class ImageShow extends Activity {
             mFlowBar.startAnimation(anim);
             Animation animDown = new TranslateAnimation(0, 0, delta, 0);
             animDown.setDuration(300);
-            mFlowBar.startAnimation(animDown);
+            mFooter.startAnimation(animDown);
             mHanler.postDelayed(mToggleRunnable, 5000);
         } else {
             mFlowBar.setVisibility(View.INVISIBLE);
