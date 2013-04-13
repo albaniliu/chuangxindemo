@@ -11,8 +11,11 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -43,13 +46,6 @@ import com.albaniliu.chuangxindemo.util.Utils;
 
 public class HomeActivity extends Activity implements View.OnClickListener {
     private static String TAG = "HomeActivity";
-    private boolean classfiViewSet = false;
-
-    private static Thread downloadThread;
-
-    // private YoukuGallery banner;
-    private ImageView[] pointImageViews;
-    private LinearLayout point_container;
 
     int[] contentDesID = new int[] {
             R.string.beauty, R.string.creative,
@@ -67,8 +63,6 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     public static final String Id = "HomeActivity";
     private LayoutParams bottomParams;
 
-    private ExecutorService service = null;
-
     private LinearLayout classfiView;
     private ProgressDialog  dialog;
     private JSONArray allDir;
@@ -81,6 +75,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
     private ScaleAnimation mInAnimation;
     private ScaleAnimation mOutAnimation;
+    
+    private MyReceiver receiver;
 
     private Handler mHandler = new Handler() {
 	    @Override
@@ -95,6 +91,24 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		    }
 	    }
     };
+    
+    public class MyReceiver extends BroadcastReceiver {
+		//自定义一个广播接收器
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			Log.v(TAG, "OnReceiver");
+			Bundle bundle = intent.getExtras();
+			int a = bundle.getInt("process");
+			if (a == 100) {
+				mHandler.sendEmptyMessageDelayed(MSG_DOWNLOAD_FINISHED, 1000);
+			} else {
+				mHandler.sendEmptyMessage(MSG_DOWNLOAD_FAILED);
+			}
+			//处理接收到的内容
+ 
+		}
+	}
     
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         //当我bindService时，让TextView显示MyService里getSystemTime()方法的返回值   
@@ -120,13 +134,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.home_activity);
         ResourceUtils.setContext(this);
-        service = Executors.newSingleThreadExecutor();
         classfiView = (LinearLayout) this.findViewById(R.id.classfi_view);
         
-        if (downloadThread == null) {
-//	        downloadThread = new DownloadThread();
-//	        downloadThread.start();
-        }
         classfiView.setVisibility(View.GONE);
         if (dialog == null) {
             dialog = new ProgressDialog(HomeActivity.this);
@@ -134,10 +143,10 @@ public class HomeActivity extends Activity implements View.OnClickListener {
             dialog.setMessage("downloading!!");
         }
         dialog.show();
+        allDir = new JSONArray();
         this.startService(new Intent(this , Downloader.class));
         Intent i  = new Intent();
         i.setClass(HomeActivity.this, Downloader.class);
-        allDir = new JSONArray();
         this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
         
         mPopup = (LinearLayout) findViewById(R.id.menu_pop_up);
@@ -146,12 +155,29 @@ public class HomeActivity extends Activity implements View.OnClickListener {
             mPopup.getChildAt(index).setOnClickListener(this);
         }
         mMenuBtn = (Button) findViewById(R.id.menu_btn);
+
+        receiver = new MyReceiver();
+		IntentFilter filter = new IntentFilter();
+		filter.addAction("com.albaniliu.chuangxindemo.action.downloader");
+		this.registerReceiver(receiver, filter);
     }
+    
+    @Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		this.unregisterReceiver(receiver);
+		this.unbindService(mServiceConnection);
+	}
 
     private void setDefaultClassfiView() {
         classfiView.removeAllViews();
         totalIndex = 0;
         int line = 0;
+        Log.v(TAG, Boolean.toString(downloader.isFinished()));
+        if (downloader.isFinished()) {
+        	allDir = downloader.getAllDir();
+    	}
         while (totalIndex < allDir.length()) {
             setDefaultClassfiLine(line++);
         }
@@ -205,12 +231,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         classfiView.addView(classfiLine);
     }
 
-    @Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-//		downloadThread.interrupt();
-	}
+
     
     public void onMenuClick(View view) {
         if (mPopupVisible) {
@@ -278,34 +299,6 @@ public class HomeActivity extends Activity implements View.OnClickListener {
             }
             mPopup.setAnimation(null);
             mPopup.startAnimation(mOutAnimation);
-        }
-    }
-
-	class DownloadThread extends Thread {
-        public void run() {
-            try {
-                allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX);
-                for (int i = 0; i < allDir.length() && !Thread.currentThread().isInterrupted(); i++) {
-                    JSONObject obj = (JSONObject) allDir.get(i);
-                    String cover = HTTPClient.COVER_INDEX_PREFIX + obj.getString("cover");
-                    Log.v(TAG, obj.getString("cover"));
-                    String coverPath = obj.getString("cover");
-                    String coverName = coverPath.substring(coverPath.lastIndexOf('/') + 1);
-                    Log.v(TAG, coverName);
-                    String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
-                            + coverName;
-                    File file = new File(fileName);
-                    if (file.exists()) {
-                        // 
-                    } else {
-                    	HTTPClient.getStreamFromUrl(cover, fileName);
-                    }
-                }
-                mHandler.sendEmptyMessageDelayed(MSG_DOWNLOAD_FINISHED, 200);
-            } catch (Exception e) {
-                mHandler.sendEmptyMessage(MSG_DOWNLOAD_FAILED);
-                e.printStackTrace();
-            }
         }
     }
 

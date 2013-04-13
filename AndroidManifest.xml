@@ -29,6 +29,8 @@
             android:theme="@android:style/Theme.NoTitleBar"
             android:screenOrientation="sensor"
             android:configChanges="orientation|keyboardHidden" >
+            
+            
         </activity>
         <activity
             android:name="com.albaniliu.chuangxindemo.ui.home.ImageGridActivity"
@@ -49,6 +51,7 @@
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
         
         <service android:name="com.albaniliu.chuangxindemo.util.Downloader" android:exported="true"></service> 
+        
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

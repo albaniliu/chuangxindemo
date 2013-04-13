@@ -46,7 +46,7 @@ public class Downloader extends Service {
 	class DownloadThread extends Thread {
         public void run() {
             try {
-                allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX);
+                allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX + "?timestamp=" + System.currentTimeMillis());
                 for (int i = 0; i < allDir.length() && !Thread.currentThread().isInterrupted(); i++) {
                     JSONObject obj = (JSONObject) allDir.get(i);
                     String cover = HTTPClient.COVER_INDEX_PREFIX + obj.getString("cover");
@@ -66,6 +66,12 @@ public class Downloader extends Service {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            
+            //  send finished broadcast
+            Intent intent=new Intent();
+            intent.putExtra("process", 100);
+            intent.setAction("com.albaniliu.chuangxindemo.action.downloader");
+            sendBroadcast(intent);
         }
     }
 	

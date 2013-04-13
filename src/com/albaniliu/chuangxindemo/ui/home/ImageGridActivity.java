@@ -79,15 +79,15 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         }
         mMenuBtn = (Button) findViewById(R.id.menu_btn);
 
-        downloadThread = new DownloadThread();
-        downloadThread.start();
-        
-        if (dialog == null) {
-            dialog = new ProgressDialog(this);
-            dialog.setTitle("please wait");
-            dialog.setMessage("downloading!!");
-        }
-        dialog.show();
+//        downloadThread = new DownloadThread();
+//        downloadThread.start();
+//        
+//        if (dialog == null) {
+//            dialog = new ProgressDialog(this);
+//            dialog.setTitle("please wait");
+//            dialog.setMessage("downloading!!");
+//        }
+//        dialog.show();
     }
 
     public void onMenuClick(View view) {
