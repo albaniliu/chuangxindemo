@@ -53,6 +53,7 @@
         android:layout_height="50px"
         android:layout_gravity="bottom"
         android:gravity="center"
-        android:textSize="20px" />
+        android:textSize="20px"
+        android:background="#88000000" />
 
 </FrameLayout>
