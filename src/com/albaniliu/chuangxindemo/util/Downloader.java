@@ -5,6 +5,8 @@ import java.io.File;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.albaniliu.chuangxindemo.data.FInode;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -17,6 +19,15 @@ public class Downloader extends Service {
 	private MyBinder mBinder = new MyBinder();
 	private static Thread downloadThread;
 	private JSONArray allDir;
+	private FInode root;
+
+	public FInode getRoot() {
+		return root;
+	}
+
+	public void setRoot(FInode root) {
+		this.root = root;
+	}
 
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -29,6 +40,7 @@ public class Downloader extends Service {
 		// TODO Auto-generated method stub
 		super.onCreate();
 		allDir = new JSONArray();
+		root = new FInode();
 		if (downloadThread == null) {
 	        downloadThread = new DownloadThread();
 	        downloadThread.start();
@@ -45,33 +57,62 @@ public class Downloader extends Service {
 	
 	class DownloadThread extends Thread {
         public void run() {
+        	int process = 0;
             try {
+            	FInode tmpRoot = new FInode();
                 allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX + "?timestamp=" + System.currentTimeMillis());
-                for (int i = 0; i < allDir.length() && !Thread.currentThread().isInterrupted(); i++) {
-                    JSONObject obj = (JSONObject) allDir.get(i);
-                    String cover = HTTPClient.COVER_INDEX_PREFIX + obj.getString("cover");
-                    Log.v(TAG, obj.getString("cover"));
-                    String coverPath = obj.getString("cover");
-                    String coverName = coverPath.substring(coverPath.lastIndexOf('/') + 1);
-                    Log.v(TAG, coverName);
-                    String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
-                            + coverName;
-                    File file = new File(fileName);
-                    if (file.exists()) {
-                        // 
-                    } else {
-                    	HTTPClient.getStreamFromUrl(cover, fileName);
-                    }
-                }
+                tmpRoot.setDirs(allDir);
+                download(tmpRoot, allDir);
+                root = tmpRoot;
+                process = 100;
             } catch (Exception e) {
                 e.printStackTrace();
             }
             
             //  send finished broadcast
             Intent intent=new Intent();
-            intent.putExtra("process", 100);
+            intent.putExtra("process", process);
             intent.setAction("com.albaniliu.chuangxindemo.action.downloader");
             sendBroadcast(intent);
+        }
+        
+        void download(FInode parent, JSONArray json) throws Exception {
+        	for (int i = 0; i < json.length() && !Thread.currentThread().isInterrupted(); i++) {
+                JSONObject obj = (JSONObject) json.get(i);
+                if (obj.has("url")) {
+                	FInode inode = new FInode(parent);
+	                String url = HTTPClient.HOST + obj.getString("url");
+	                JSONArray jArray = HTTPClient.getJSONArrayFromUrl(url + "?timestamp=" + System.currentTimeMillis());
+	                inode.setDirs(jArray);
+	                download(inode, jArray);
+	                parent.addChild(inode);
+	                
+	                String cover = HTTPClient.COVER_INDEX_PREFIX + obj.getString("cover");
+	                Log.v(TAG, obj.getString("cover"));
+	                String coverPath = obj.getString("cover");
+	                String coverName = coverPath.substring(coverPath.lastIndexOf('/') + 1);
+	                Log.v(TAG, coverName);
+	                String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
+	                        + coverName;
+	                File file = new File(fileName);
+	                if (file.exists()) {
+	                    // 
+	                } else {
+	                	HTTPClient.getStreamFromUrl(cover, fileName);
+	                }
+                } else {
+                	String path = HTTPClient.HOST + obj.getString("path");
+                	String name = path.substring(path.lastIndexOf('/') + 1);
+                	String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
+	                        + name;
+                	File file = new File(fileName);
+	                if (file.exists()) {
+	                    // 
+	                } else {
+	                	HTTPClient.getStreamFromUrl(path, fileName);
+	                }
+                }
+            }
         }
     }
 	

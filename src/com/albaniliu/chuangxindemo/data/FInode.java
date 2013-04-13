@@ -13,11 +13,13 @@ public class FInode {
 	public FInode() {
 		parent = null;
 		children = new ArrayList<FInode>();
+		dirs = new JSONArray();
 	}
 	
 	public FInode(FInode parent) {
 		this.parent = parent;
 		children = new ArrayList<FInode>();
+		dirs = new JSONArray();
 	}
 	
 	public boolean isRoot() {

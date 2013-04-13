@@ -31,12 +31,14 @@ public class HTTPClient {
 	private static String TAG = "HTTPClient";
 	
 	public static String URL_INDEX;
+	public static String HOST;
 	public static String COVER_INDEX_PREFIX;
 	
 	public static String URL_ABOUTPAGE;
 	
 	static {
 		URL_INDEX = "http://184.105.176.95/app/DemoCenter/Api/albumlist.vdi";
+		HOST = "http://184.105.176.95/";
 		COVER_INDEX_PREFIX = "http://184.105.176.95";
 	}
 	
