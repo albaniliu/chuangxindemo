@@ -5,23 +5,28 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.albaniliu.chuangxindemo.ImageShow;
 import com.albaniliu.chuangxindemo.R;
 import com.albaniliu.chuangxindemo.util.HTTPClient;
 import com.albaniliu.chuangxindemo.util.ResourceUtils;
 import com.albaniliu.chuangxindemo.util.Utils;
+
+import static com.albaniliu.chuangxindemo.ui.home.HomeActivity.*;
 
 public class ImageGridActivity extends Activity implements View.OnClickListener {
     private static String TAG = "ImageGridActivity";
@@ -39,30 +44,24 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
     private boolean mPopupVisible = false;
     private LinearLayout mPopup;
     private Button mMenuBtn;
+    private ProgressDialog  dialog;
 
     private ScaleAnimation mInAnimation;
     private ScaleAnimation mOutAnimation;
 
-    // private Handler mHandler = new Handler() {
-    //
-    // @Override
-    // public void handleMessage(Message msg) {
-    // super.handleMessage(msg);
-    // if (msg.what == MSG_CHECK_HOME_RESOURCE_LOADING) {
-    // if (homeData.isLoaded()) {
-    // setClassfiView();
-    // } else if (!homeData.isLoading()) {
-    // homeData.loadHomeResource(mHandler,HomeActivity.this);
-    // } else
-    // chechHomeResource();
-    // } else {
-    // // if (bannerAdapter != null)
-    // // bannerAdapter.notifyDataSetChanged();
-    // setClassfiView();
-    // }
-    // }
-    //
-    // };
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == MSG_DOWNLOAD_FINISHED) {
+                setDefaultClassfiView();
+                dialog.dismiss();
+                classfiView.setVisibility(View.VISIBLE);
+            } else if (msg.what == MSG_DOWNLOAD_FAILED) {
+                Toast.makeText(getBaseContext(), "下载失败", Toast.LENGTH_LONG).show();
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,6 +81,13 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
 
         downloadThread = new DownloadThread();
         downloadThread.start();
+        
+        if (dialog == null) {
+            dialog = new ProgressDialog(this);
+            dialog.setTitle("please wait");
+            dialog.setMessage("downloading!!");
+        }
+        dialog.show();
     }
 
     public void onMenuClick(View view) {
@@ -98,7 +104,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
             if (mInAnimation == null) {
                 mInAnimation = new ScaleAnimation(
                         0, 1, 0, 1, mPopup.getWidth() - Utils.dip2px(this, 19), 0);
-                mInAnimation.setDuration(400);
+                mInAnimation.setDuration(300);
                 mInAnimation.setInterpolator(this, android.R.anim.accelerate_interpolator);
                 mInAnimation.setAnimationListener(new AnimationListener() {
 
@@ -129,7 +135,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
             if (mOutAnimation == null) {
                 mOutAnimation = new ScaleAnimation(
                         1, 0, 1, 0, mPopup.getWidth() - Utils.dip2px(this, 19), 0);
-                mOutAnimation.setDuration(400);
+                mOutAnimation.setDuration(300);
                 mOutAnimation.setInterpolator(this, android.R.anim.accelerate_interpolator);
                 mOutAnimation.setAnimationListener(new AnimationListener() {
                     @Override
@@ -177,7 +183,22 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
             LinearLayout des = (LinearLayout) classfiImage.findViewById(R.id.des_layout);
             des.setVisibility(View.GONE);
             classfiLine.addView(classfiImage);
-            frame.setOnClickListener(this);
+            final int index = i;
+            frame.setOnClickListener(new View.OnClickListener() {
+                
+                @Override
+                public void onClick(View v) {
+                    if (downloadThread.isAlive()) {
+                        dialog.show();
+                        return;
+                    }
+                    Intent intent = new Intent();
+                    intent.putExtra("line", line);
+                    intent.putExtra("index", index);
+                    intent.setClass(getApplicationContext(), ImageShow.class);
+                    startActivity(intent);
+                }
+            });
         }
 
         classfiView.addView(classfiLine);
@@ -191,6 +212,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
                     JSONObject obj = (JSONObject) allDir.get(i);
                     Log.v(TAG, obj.getString("id"));
                 }
+                mHandler.sendEmptyMessage(MSG_DOWNLOAD_FINISHED);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -205,13 +227,8 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
                 break;
             case R.id.menu_more:
                 break;
-            default:
-                if (downloadThread.isAlive()) {
-                    break;
-                }
-                Intent intent = new Intent();
-                intent.setClass(getApplicationContext(), ImageShow.class);
-                startActivity(intent);
+            case R.id.whole:
+                hidePopup();
                 break;
         }
 

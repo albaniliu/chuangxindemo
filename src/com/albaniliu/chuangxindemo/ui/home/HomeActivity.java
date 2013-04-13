@@ -226,7 +226,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
             if (mInAnimation == null) {
                 mInAnimation = new ScaleAnimation(
                         0, 1, 0, 1, mPopup.getWidth() - Utils.dip2px(this, 19), 0);
-                mInAnimation.setDuration(400);
+                mInAnimation.setDuration(300);
                 mInAnimation.setInterpolator(this, android.R.anim.accelerate_interpolator);
                 mInAnimation.setAnimationListener(new AnimationListener() {
 
@@ -257,7 +257,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
             if (mOutAnimation == null) {
                 mOutAnimation = new ScaleAnimation(
                         1, 0, 1, 0, mPopup.getWidth() - Utils.dip2px(this, 19), 0);
-                mOutAnimation.setDuration(400);
+                mOutAnimation.setDuration(300);
                 mOutAnimation.setInterpolator(this, android.R.anim.accelerate_interpolator);
                 mOutAnimation.setAnimationListener(new AnimationListener() {
                     @Override
@@ -315,6 +315,9 @@ public class HomeActivity extends Activity implements View.OnClickListener {
             case R.id.menu_refresh:
                 break;
             case R.id.menu_more:
+                break;
+            case R.id.whole:
+                hidePopup();
                 break;
         }
         
