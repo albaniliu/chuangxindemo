@@ -31,8 +31,6 @@ import static com.albaniliu.chuangxindemo.ui.home.HomeActivity.*;
 public class ImageGridActivity extends Activity implements View.OnClickListener {
     private static String TAG = "ImageGridActivity";
 
-    private Thread downloadThread;
-
     public static final int MSG_CHECK_HOME_RESOURCE_LOADING = 1001;
 
     public static int DEFAULT_BANNER_COUNT = 5;
@@ -79,15 +77,6 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         }
         mMenuBtn = (Button) findViewById(R.id.menu_btn);
 
-//        downloadThread = new DownloadThread();
-//        downloadThread.start();
-//        
-//        if (dialog == null) {
-//            dialog = new ProgressDialog(this);
-//            dialog.setTitle("please wait");
-//            dialog.setMessage("downloading!!");
-//        }
-//        dialog.show();
     }
 
     public void onMenuClick(View view) {
@@ -188,10 +177,6 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
                 
                 @Override
                 public void onClick(View v) {
-                    if (downloadThread.isAlive()) {
-                        dialog.show();
-                        return;
-                    }
                     Intent intent = new Intent();
                     intent.putExtra("line", line);
                     intent.putExtra("index", index);
