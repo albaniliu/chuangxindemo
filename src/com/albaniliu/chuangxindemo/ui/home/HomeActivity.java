@@ -24,6 +24,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.Animation.AnimationListener;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -37,7 +41,7 @@ import com.albaniliu.chuangxindemo.util.HTTPClient;
 import com.albaniliu.chuangxindemo.util.ResourceUtils;
 import com.albaniliu.chuangxindemo.util.Utils;
 
-public class HomeActivity extends Activity {
+public class HomeActivity extends Activity implements View.OnClickListener {
     private static String TAG = "HomeActivity";
     private boolean classfiViewSet = false;
 
@@ -70,6 +74,13 @@ public class HomeActivity extends Activity {
     private JSONArray allDir;
     private int totalIndex;
     private Downloader downloader;
+    
+    private boolean mPopupVisible = false;
+    private LinearLayout mPopup;
+    private Button mMenuBtn;
+
+    private ScaleAnimation mInAnimation;
+    private ScaleAnimation mOutAnimation;
 
     private Handler mHandler = new Handler() {
 	    @Override
@@ -128,6 +139,13 @@ public class HomeActivity extends Activity {
         i.setClass(HomeActivity.this, Downloader.class);
         allDir = new JSONArray();
         this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
+        
+        mPopup = (LinearLayout) findViewById(R.id.menu_pop_up);
+        int popupButtonCount = mPopup.getChildCount();
+        for (int index = 0; index < popupButtonCount; index++) {
+            mPopup.getChildAt(index).setOnClickListener(this);
+        }
+        mMenuBtn = (Button) findViewById(R.id.menu_btn);
     }
 
     private void setDefaultClassfiView() {
@@ -193,6 +211,75 @@ public class HomeActivity extends Activity {
 		super.onDestroy();
 //		downloadThread.interrupt();
 	}
+    
+    public void onMenuClick(View view) {
+        if (mPopupVisible) {
+            hidePopup();
+        } else {
+            showPopup();
+        }
+    }
+
+    private void showPopup() {
+        if (!mPopupVisible) {
+            mPopupVisible = true;
+            if (mInAnimation == null) {
+                mInAnimation = new ScaleAnimation(
+                        0, 1, 0, 1, mPopup.getWidth() - Utils.dip2px(this, 19), 0);
+                mInAnimation.setDuration(400);
+                mInAnimation.setInterpolator(this, android.R.anim.accelerate_interpolator);
+                mInAnimation.setAnimationListener(new AnimationListener() {
+
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        mPopup.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        mPopup.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+            mPopup.setAnimation(null);
+            mPopup.startAnimation(mInAnimation);
+        }
+    }
+
+    private void hidePopup() {
+        if (mPopupVisible) {
+            mPopupVisible = false;
+            if (mOutAnimation == null) {
+                mOutAnimation = new ScaleAnimation(
+                        1, 0, 1, 0, mPopup.getWidth() - Utils.dip2px(this, 19), 0);
+                mOutAnimation.setDuration(400);
+                mOutAnimation.setInterpolator(this, android.R.anim.accelerate_interpolator);
+                mOutAnimation.setAnimationListener(new AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        mPopup.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+            mPopup.setAnimation(null);
+            mPopup.startAnimation(mOutAnimation);
+        }
+    }
 
 	class DownloadThread extends Thread {
         public void run() {
@@ -220,5 +307,16 @@ public class HomeActivity extends Activity {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.menu_refresh:
+                break;
+            case R.id.menu_more:
+                break;
+        }
+        
     }
 }

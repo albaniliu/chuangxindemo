@@ -1,53 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
     <FrameLayout
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:orientation="horizontal" >
-        <ImageView 
+
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher"
-            />
-        <ImageView 
+            android:src="@drawable/ic_launcher" />
+
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="80px"
-            android:src="@drawable/ic_launcher"
-            />
-        <Button 
+            android:src="@drawable/ic_launcher" />
+
+        <Button
+            android:id="@+id/menu_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/animal"
             android:layout_gravity="right"
             android:onClick="onMenuClick"
-            android:layout_alignParentRight="true"
-            />
+            android:text="@string/animal" />
     </FrameLayout>
-            
-	<ScrollView
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent" >
-	
-	    <LinearLayout
-	        android:id="@+id/home"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:orientation="vertical" >
-	
-	       <LinearLayout
-	            android:id="@+id/classfi_view"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:orientation="vertical" >
-	
-	        </LinearLayout>
-	
-	    </LinearLayout>
-	
-	</ScrollView>
-</LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/title_bar" >
+
+        <LinearLayout
+            android:id="@+id/home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/classfi_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/menu_pop_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/title_bar"
+        android:layout_marginRight="6px"
+        android:layout_marginTop="-4px"
+        android:background="@drawable/more_bg"
+        android:orientation="vertical"
+        android:padding="1dp"
+        android:visibility="invisible" >
+
+        <Button
+            android:id="@+id/menu_refresh"
+            style="@style/PopupButton"
+            android:layout_marginTop="4dp"
+            android:text="@string/menu_refresh" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="2px"
+            android:layout_marginRight="2px"
+            android:background="#DD212121" />
+
+        <Button
+            android:id="@+id/menu_more"
+            style="@style/PopupButton"
+            android:text="@string/menu_other" />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -18,6 +18,7 @@
     <drawable name="alpha_black">#99000000</drawable>
     <drawable name="color_transparent">#00000000</drawable>
     <drawable name="color_price">#a9e9f7</drawable>
+    <drawable name="menu_item_pressed">#2a2b2c</drawable>
     <drawable name="color_item_normal">#e7e7e7</drawable>
     <drawable name="color_item_selected">#fcfcfc</drawable>
     <drawable name="color_item_text_normal">#3b3b3b</drawable>

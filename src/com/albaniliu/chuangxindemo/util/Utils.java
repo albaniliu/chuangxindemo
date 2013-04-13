@@ -16,6 +16,7 @@
 
 package com.albaniliu.chuangxindemo.util;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
@@ -25,6 +26,11 @@ import android.graphics.Matrix;
 public class Utils {
     private static final int UNCONSTRAINED = -1;
 
+    public static int dip2px(Context context, float dipValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dipValue * scale + 0.5f);
+    }
+    
     public static Bitmap rotate(Bitmap b, int degrees) {
         if (degrees != 0 && b != null) {
             Matrix m = new Matrix();
