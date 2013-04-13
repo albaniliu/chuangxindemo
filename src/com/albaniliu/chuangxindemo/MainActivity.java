@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onStop();
 		Log.i("Main", "onStop");
-		mFlashThread.interrupt();
+		mFlashThread.setStoped(true);
 	}
 
 	private final int MSG_START_ACTIVITY = 0;
@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
 	private RelativeLayout mContainer; // the view container
 	private ViewManager mViewManager;
 	
-	private Thread mFlashThread;
+	private PlayThread mFlashThread;
 	int mResources[] = {R.drawable.meinv0, R.drawable.meinv1, R.drawable.meinv2, R.drawable.meinv3};
 	int index = 0;
 	
@@ -112,8 +112,6 @@ public class MainActivity extends Activity {
 		initFields();
 //		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		mHandler.sendEmptyMessageDelayed(MSG_START_ACTIVITY, 2000);
-//		mFlashThread = new PlayThread();
-//		mFlashThread.start();
 		this.startService(new Intent(this , Downloader.class));
 	}
 	
@@ -197,22 +195,6 @@ public class MainActivity extends Activity {
         }
 	}
 	
-//	public void downloadThread() {
-//		loading(this);
-//		Thread t = new Thread(new Runnable() {
-//			public void run() {
-//				try {
-//					Thread.sleep(2000);
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				mHandler.sendEmptyMessage(MSG_STOP_LOADING);
-//			}
-//		});
-//		t.start();
-//	}
-	
 	public void loading(Activity act) {
 		mLoadingDialog = new ProgressDialog(act);
 		mLoadingDialog.setTitle(R.string.dialog_title);
@@ -224,10 +206,6 @@ public class MainActivity extends Activity {
 		if (mLoadingDialog != null) {
 			mLoadingDialog.dismiss();
 		}
-//		mFirstLayout.setVisibility(View.GONE);
-//		mContentLayout.setVisibility(View.VISIBLE);
-//		Intent it = new Intent(MainActivity.this, HomeActivity.class);
-//		startActivity(it);  
 	}
 	
 	/**
@@ -250,21 +228,6 @@ public class MainActivity extends Activity {
 				: Intent.FLAG_ACTIVITY_NEW_TASK;
 		if (aClass == null)
 			return null;
-//		Intent intent = new Intent(MainActivity.this, aClass);
-//		intent.addFlags(flag);
-//
-//		if (aBundle != null) {
-//			intent.putExtras(aBundle);
-//			Activity old = getLocalActivityManager().getActivity(aId);
-//			if (old != null) {
-//				old.getIntent().putExtras(aBundle);
-//			}
-//		}
-//
-//		Window win = getLocalActivityManager().startActivity(aId, intent);
-//		View view = win.getDecorView();
-
-//		return view;
 		return null;
 	}
 	
@@ -295,9 +258,18 @@ public class MainActivity extends Activity {
 	}
 	
 	class PlayThread extends Thread {
+		private boolean isStoped = false;
 		
+		public boolean isStoped() {
+			return isStoped;
+		}
+
+		public void setStoped(boolean isStoped) {
+			this.isStoped = isStoped;
+		}
+
 		public void run() {
-			while(!Thread.currentThread().isInterrupted()) {
+			while(!isStoped) {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -309,5 +281,6 @@ public class MainActivity extends Activity {
 					myView.postInvalidate();
 			}
 		}
+		
 	}
 }
