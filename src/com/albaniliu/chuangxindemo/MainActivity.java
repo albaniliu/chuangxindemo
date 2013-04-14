@@ -133,14 +133,18 @@ public class MainActivity extends Activity {
 
             if (mLeftButton != null && y > mLeftButton.top && y < mLeftButton.bottom) {
                 if (x > mLeftButton.left && x < mLeftButton.right) {
-                    mTouch = true;
-                    Intent it = new Intent(MainActivity.this, HomeActivity.class);
-                    startActivity(it);
+                	if (!mTouch) {
+	                    mTouch = true;
+	                    Intent it = new Intent(MainActivity.this, HomeActivity.class);
+	                    startActivity(it);
+                	}
                     return true;
                 } else if (x > mRightButton.left && x < mRightButton.right) {
-                    mTouch = true;
-                    Intent it = new Intent(MainActivity.this, HomeActivity.class);
-                    startActivity(it);
+                	if (!mTouch) {
+	                    mTouch = true;
+	                    Intent it = new Intent(MainActivity.this, HomeActivity.class);
+	                    startActivity(it);
+                	}
                     return true;
                 }
             }
