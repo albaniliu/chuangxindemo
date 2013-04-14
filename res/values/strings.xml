@@ -27,5 +27,6 @@
     <string name="classfi_line_right">分类行右图</string>
     <string name="dialog_title">正在加载</string>
     <string name="dialog_msg">请稍等..</string>
+    <string name="menu">菜单</string>
 
 </resources>
