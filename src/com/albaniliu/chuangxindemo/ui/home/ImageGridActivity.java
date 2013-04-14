@@ -14,6 +14,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -41,6 +42,8 @@ import com.albaniliu.chuangxindemo.util.Utils;
 
 public class ImageGridActivity extends Activity implements View.OnClickListener {
     private static String TAG = "ImageGridActivity";
+    
+    private boolean isImage = true;
 
     public static final int MSG_CHECK_HOME_RESOURCE_LOADING = 1001;
 
@@ -101,6 +104,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
         inodePath = extras.getString("inode_path");
+        isImage = extras.getBoolean("image");
         currentInode = new FInode();
         this.setContentView(R.layout.home_activity);
         ResourceUtils.setContext(this);
@@ -217,7 +221,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         	padding = 12;
         }
         classfiLine.setPadding(padding, 1, padding, 1);
-        for (int i = 0; i < num && totalIndex < allImages.length(); i++, totalIndex++) {
+        for (int i = 0; i < num && totalIndex < allImages.length(); totalIndex++) {
             LinearLayout classfiImage = (LinearLayout) getLayoutInflater().inflate(
                     R.layout.grid_classfi_image, null);
             FrameLayout frame = (FrameLayout) classfiImage.findViewById(R.id.left);
@@ -228,10 +232,20 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
             	JSONObject obj = (JSONObject) allImages.get(totalIndex);
 	            ImageView image = (ImageView) classfiImage.findViewById(R.id.image_left);
 	            Log.v(TAG, obj.getString("attrib"));
-	            if (!obj.getString("attrib").equals("image")) {
+	            if ((!obj.getString("attrib").equals("image") && isImage)
+	            		|| (obj.getString("attrib").equals("image") && !isImage)) {
 	            	continue;
 	            }
-	            String coverPath = obj.getString("path");
+	            String coverPath = "";
+	            String filePath = obj.getString("path");
+            	filePath = filePath.substring(filePath.lastIndexOf('/') + 1);
+            	final String videoFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
+            			+ filePath;
+	            if (isImage) {
+	            	coverPath = obj.getString("path");
+	            } else {
+	            	coverPath = obj.getString("pic");
+	            }
 	            Log.v(TAG, coverPath);
                 String coverName = coverPath.substring(coverPath.lastIndexOf('/') + 1);
 	            String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
@@ -241,25 +255,36 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
 	            
 	            TextView txt = (TextView) classfiImage.findViewById(R.id.des);
 				txt.setText(obj.getString("name"));
+				
+				classfiLine.addView(classfiImage);
+	            
+	            final int index = num * line + i;
+	            frame.setOnClickListener(new View.OnClickListener() {
+	                
+	                @Override
+	                public void onClick(View v) {
+	                    mPopup.setVisibility(View.INVISIBLE);
+	                    mPopupVisible = false;
+	                    
+	                    if (isImage) {
+		                    Intent intent = new Intent();
+		                    intent.putExtra("index", index);
+		                    intent.setClass(getApplicationContext(), ImageShow.class);
+		                    startActivity(intent);
+	                    } else {
+	                    	Intent intent = new Intent(Intent.ACTION_VIEW);
+	                		String type = "video/*";
+	                		Uri name = Uri.parse(videoFileName);
+	                		intent.setDataAndType(name, type);
+	                		startActivity(intent); 
+	                    }
+	                }
+	            });
+	            i++;
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-            
-            classfiLine.addView(classfiImage);
-            final int index = num * line + i;
-            frame.setOnClickListener(new View.OnClickListener() {
-                
-                @Override
-                public void onClick(View v) {
-                    mPopup.setVisibility(View.INVISIBLE);
-                    mPopupVisible = false;
-                    Intent intent = new Intent();
-                    intent.putExtra("inode", inodePath);
-                    intent.putExtra("index", index);
-                    intent.setClass(getApplicationContext(), ImageShow.class);
-                    startActivity(intent);
-                }
-            });
+
         }
 
         classfiView.addView(classfiLine);

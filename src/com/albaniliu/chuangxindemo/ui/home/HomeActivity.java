@@ -371,6 +371,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                 }
                 Log.v(TAG, "inode_path: " + value.toString());
                 bundle.putString("inode_path", value.toString());
+                bundle.putBoolean("image", isImage);
                 Intent it = new Intent(HomeActivity.this, ImageGridActivity.class);
                 it.putExtras(bundle);
                 startActivity(it);
