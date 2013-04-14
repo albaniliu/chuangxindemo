@@ -117,6 +117,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         Intent i  = new Intent();
         i.setClass(ImageGridActivity.this, Downloader.class);
         this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
+        
     }
 
     public void onMenuClick(View view) {
@@ -218,7 +219,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         classfiLine.setPadding(padding, 1, padding, 1);
         for (int i = 0; i < num && totalIndex < allImages.length(); i++, totalIndex++) {
             LinearLayout classfiImage = (LinearLayout) getLayoutInflater().inflate(
-                    R.layout.classfi_image, null);
+                    R.layout.grid_classfi_image, null);
             FrameLayout frame = (FrameLayout) classfiImage.findViewById(R.id.left);
             LinearLayout des = (LinearLayout) classfiImage.findViewById(R.id.des_layout);
             des.setVisibility(View.GONE);
@@ -241,7 +242,6 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
 	            TextView txt = (TextView) classfiImage.findViewById(R.id.des);
 				txt.setText(obj.getString("name"));
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
             
@@ -254,6 +254,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
                     mPopup.setVisibility(View.INVISIBLE);
                     mPopupVisible = false;
                     Intent intent = new Intent();
+                    intent.putExtra("inode", inodePath);
                     intent.putExtra("index", index);
                     intent.setClass(getApplicationContext(), ImageShow.class);
                     startActivity(intent);
@@ -285,9 +286,16 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         hidePopup();
         switch (id) {
             case R.id.menu_refresh:
-            	downloader.refreshForce();
+                if (downloader != null) {
+                    downloader.refreshForce();
+                    dialog.show();
+                }
                 break;
             case R.id.menu_more:
+                Intent intent = new Intent();
+                intent.putExtra("sildeshow", true);
+                intent.setClass(getApplicationContext(), ImageShow.class);
+                startActivity(intent); 
                 break;
             case R.id.whole:
                 break;

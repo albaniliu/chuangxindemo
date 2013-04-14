@@ -85,6 +85,7 @@ public class RandomDataSource implements SlideShow.DataSource {
     private String mPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1";
     private File mTestFolder;
     private boolean mFromDB = false;
+    private int mCurIndex = 0;
     /**
      * Matches code in MediaProvider.computeBucketValues. Should be a common
      * function.
@@ -98,9 +99,10 @@ public class RandomDataSource implements SlideShow.DataSource {
         mTestFolder = new File(mPath);
     }
     
-    public RandomDataSource(ArrayList<ShowingNode> nodes) {
+    public RandomDataSource(ArrayList<ShowingNode> nodes, int curIndex) {
         super();
         createTestFile(nodes);
+        mCurIndex = curIndex;
     }
     
     private static ImageList sList;
@@ -148,9 +150,11 @@ public class RandomDataSource implements SlideShow.DataSource {
             if (mFilesPath.size() == 0) {
                 createTestFile(mTestFolder);
             }
-            double random = Math.random();
-            random *= mFilesPath.size();
-            int index = (int) random;
+            
+            int index = mCurIndex++;
+            if (mCurIndex == mFilesPath.size()) {
+                mCurIndex = 0;
+            }
             
             try {
                 retVal = Utils.createBitmapByFilePath(mFilesPath.get(index), 1024);
