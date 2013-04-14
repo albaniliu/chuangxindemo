@@ -16,11 +16,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:paddingBottom="8px"
-        android:paddingTop="8px"
-        android:paddingLeft="40px"
+        android:background="#88000000"
         android:orientation="horizontal"
-        android:background="#88000000" >
+        android:paddingBottom="8px"
+        android:paddingLeft="40px"
+        android:paddingTop="8px" >
 
         <ImageView
             android:layout_width="wrap_content"
@@ -52,8 +52,14 @@
         android:layout_width="match_parent"
         android:layout_height="50px"
         android:layout_gravity="bottom"
+        android:background="#88000000"
         android:gravity="center"
-        android:textSize="20px"
-        android:background="#88000000" />
+        android:textSize="20px" />
+
+    <com.albaniliu.chuangxindemo.widget.SlideShow
+        android:id="@+id/slideshow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
 </FrameLayout>
