@@ -1,3 +1,4 @@
+
 package com.albaniliu.chuangxindemo.widget;
 
 import android.content.Context;
@@ -12,81 +13,80 @@ import android.view.MotionEvent;
  * @author Liang
  */
 public class LargePicGallery extends ViewPager {
-	private BaseImageView imageView;
-	public int mScreenWidth;
-	public int mScreenHeight;
-	
-	private SingleTapListner mTapUpListener;
+    private BaseImageView imageView;
+    public int mScreenWidth;
+    public int mScreenHeight;
 
-	/**
-	 * 监听左右滑动事件
-	 */
-	public static interface SingleTapListner {
-		void onSingleTapUp();
-	}
+    private SingleTapListner mTapUpListener;
 
-	public LargePicGallery(Context context) {
-		super(context);
-		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-		mScreenWidth = metrics.widthPixels;
-		mScreenHeight = metrics.heightPixels;
-	}
+    /**
+     * 监听左右滑动事件
+     */
+    public static interface SingleTapListner {
+        void onSingleTapUp();
+    }
 
-	public void setTapUpListener(SingleTapListner listener) {
-		mTapUpListener = listener;
-	}
+    public LargePicGallery(Context context) {
+        super(context);
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        mScreenWidth = metrics.widthPixels;
+        mScreenHeight = metrics.heightPixels;
+    }
 
-	BaseImageView getImageView() {
-		int pos = this.getCurrentItem();
-		int count = getChildCount();
-		for (int i = 0; i < count; ++i) {
-			int index = (Integer) getChildAt(i).getTag();
-			if (pos == index) {
-				return (BaseImageView) getChildAt(i);
-			}
-		}
-		return null;
-	}
+    public void setTapUpListener(SingleTapListner listener) {
+        mTapUpListener = listener;
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 */
-	public LargePicGallery(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-		mScreenWidth = metrics.widthPixels;
-		mScreenHeight = metrics.heightPixels;
-	}
+    BaseImageView getImageView() {
+        int pos = this.getCurrentItem();
+        int count = getChildCount();
+        for (int i = 0; i < count; ++i) {
+            int index = (Integer) getChildAt(i).getTag();
+            if (pos == index) {
+                return (BaseImageView) getChildAt(i);
+            }
+        }
+        return null;
+    }
 
-	float baseValue = 0;
-	float originalScale = 1;
-	float prePosX = 0f;
-	float prePosY = 0f;
+    /**
+     * Constructor
+     */
+    public LargePicGallery(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        mScreenWidth = metrics.widthPixels;
+        mScreenHeight = metrics.heightPixels;
+    }
 
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		imageView = getImageView();
+    float baseValue = 0;
+    float originalScale = 1;
+    float prePosX = 0f;
+    float prePosY = 0f;
 
-		if (imageView.isZoomIn()) {
-			return false;
-		}
-		return super.onTouchEvent(event);
-	}
-	
-	@Override
-	public boolean onInterceptTouchEvent(MotionEvent event) {
-		imageView = getImageView();
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        imageView = getImageView();
 
-		if (imageView.isZoomIn()) {
-			return false;
-		}
-		try {
-		    return super.onInterceptTouchEvent(event);
-		} catch (IllegalArgumentException e) {
-		    return false;
-		} catch (RuntimeException e) {
-		    return false;
-		}
-	}
+        if (imageView.isZoomIn()) {
+            return false;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        imageView = getImageView();
+
+        if (imageView == null || imageView.isZoomIn()) {
+            return false;
+        }
+        try {
+            return super.onInterceptTouchEvent(event);
+        } catch (IllegalArgumentException e) {
+            return false;
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
 }
