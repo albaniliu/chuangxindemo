@@ -1,6 +1,9 @@
 
 package com.albaniliu.chuangxindemo.ui.home;
 
+import static com.albaniliu.chuangxindemo.ui.home.HomeActivity.MSG_DOWNLOAD_FAILED;
+import static com.albaniliu.chuangxindemo.ui.home.HomeActivity.MSG_DOWNLOAD_FINISHED;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +24,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.ScaleAnimation;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -36,8 +38,6 @@ import com.albaniliu.chuangxindemo.util.Downloader;
 import com.albaniliu.chuangxindemo.util.HTTPClient;
 import com.albaniliu.chuangxindemo.util.ResourceUtils;
 import com.albaniliu.chuangxindemo.util.Utils;
-
-import static com.albaniliu.chuangxindemo.ui.home.HomeActivity.*;
 
 public class ImageGridActivity extends Activity implements View.OnClickListener {
     private static String TAG = "ImageGridActivity";

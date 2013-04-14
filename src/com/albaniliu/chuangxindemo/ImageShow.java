@@ -36,7 +36,6 @@ import com.albaniliu.chuangxindemo.widget.ViewPagerAdapter;
 public class ImageShow extends Activity {
     private static final String TAG = "ImageShow";
     private static final int GET_NODE_DONE = 1;
-    private String mPath = Environment.getExternalStorageDirectory() + "/liangdemo1";
     private ViewPagerAdapter mAdapter;
     private LinearLayout mFlowBar;
     private TextView mFooter;
@@ -180,6 +179,12 @@ public class ImageShow extends Activity {
         mCurrentIndex  = getIntent().getIntExtra("index", 0);
         mHanler.postDelayed(mToggleRunnable, 5000);
     }
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+        mPager.setCurrentItem(mCurrentIndex);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -210,7 +215,7 @@ public class ImageShow extends Activity {
                     String name = obj.getString("name");
                     String content = obj.getString("content");
                     int start = path.lastIndexOf('/') + 1;
-                    String nodePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangedemo1/" + path.substring(start);
+                    String nodePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/" + path.substring(start);
                     nodes.add(new ShowingNode(nodePath, name, content));
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
