@@ -82,6 +82,7 @@ public class Downloader extends Service {
                 if (obj.has("url")) {
                 	FInode inode = new FInode(parent);
 	                String url = HTTPClient.HOST + obj.getString("url");
+	                Log.v(TAG, "url: " + url);
 	                JSONArray jArray = HTTPClient.getJSONArrayFromUrl(url + "?timestamp=" + System.currentTimeMillis());
 	                inode.setDirs(jArray);
 	                download(inode, jArray);
