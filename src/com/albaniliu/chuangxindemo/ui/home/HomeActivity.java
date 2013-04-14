@@ -210,22 +210,6 @@ public class HomeActivity extends Activity implements View.OnClickListener {
             MyOnClickListener listener = new MyOnClickListener();
             listener.setIndex(totalIndex);
             frame.setOnClickListener(listener);
-//            frame.setOnClickListener(new OnClickListener() {
-//
-//                @Override
-//                public void onClick(View v) {
-//                	if (currentInode.isLeaf()) {
-//	                    Bundle bundle = new Bundle();
-//	                    bundle.putInt(BundleKeyWord.KEY_TYPE, line * 2 + 1);
-//	                    Intent it = new Intent(HomeActivity.this, ImageGridActivity.class);
-//	                    startActivity(it);
-//                	} else {
-//                		currentInode = currentInode.getChildren().get(totalIndex);
-//                		setDefaultClassfiView();
-//                	}
-//                }
-//                
-//            });
             try {
             	JSONObject obj = (JSONObject) allDir.get(totalIndex);
 	            ImageView image = (ImageView) classfiImage.findViewById(R.id.image_left);
@@ -359,6 +343,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                 Log.v(TAG, "inode_path: " + value.toString());
                 bundle.putString("inode_path", value.toString());
                 Intent it = new Intent(HomeActivity.this, ImageGridActivity.class);
+                it.putExtras(bundle);
                 startActivity(it);
         	} else {
         		setDefaultClassfiView();

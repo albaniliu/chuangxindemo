@@ -108,7 +108,7 @@ public class Downloader extends Service {
         
         void download(FInode parent, JSONArray json) throws Exception {
         	int index = 0;
-        	for (int i = 0; i < 1 && i < json.length() && !Thread.currentThread().isInterrupted(); i++) {
+        	for (int i = 0; i < 4 && i < json.length() && !Thread.currentThread().isInterrupted(); i++) {
                 JSONObject obj = (JSONObject) json.get(i);
                 if (obj.has("url")) {
                 	FInode inode = new FInode(parent);
