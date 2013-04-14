@@ -191,9 +191,9 @@ public class ImageShow extends Activity {
         Intent i = new Intent();
         i.setClass(this, Downloader.class);
         this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
+        mInodeDes = getIntent().getStringExtra("inode");
         if (!mSlideShowMode) {
             mCurrentIndex  = getIntent().getIntExtra("index", 0);
-            mInodeDes = getIntent().getStringExtra("inode");
         } else {
             mCurrentIndex = 0;
         }
