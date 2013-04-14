@@ -138,6 +138,7 @@ public class MainActivity extends Activity {
 	                    Intent it = new Intent(MainActivity.this, HomeActivity.class);
 	                    it.putExtra("image", true);
 	                    startActivity(it);
+	                    finish();
                 	}
                     return true;
                 } else if (x > mRightButton.left && x < mRightButton.right) {
@@ -146,6 +147,7 @@ public class MainActivity extends Activity {
 	                    Intent it = new Intent(MainActivity.this, HomeActivity.class);
 	                    it.putExtra("image", false);
 	                    startActivity(it);
+	                    finish();
                 	}
                     return true;
                 }

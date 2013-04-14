@@ -181,7 +181,6 @@ public class ImageShow extends Activity {
                 @Override
                 public void onClick(View v) {
                     mSlideshow.setVisibility(View.GONE);
-                    mSlideshow.clearBitmap();
                     showBarDirectly();
                 }
             });
@@ -230,7 +229,6 @@ public class ImageShow extends Activity {
     public void onBackPressed() {
         if (!mSlideShowMode && mSlideshow.getVisibility() == View.VISIBLE) {
             mSlideshow.setVisibility(View.GONE);
-            mSlideshow.clearBitmap();
             showBarDirectly();
             return;
         }

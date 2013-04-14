@@ -32,6 +32,7 @@ import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 import com.albaniliu.chuangxindemo.data.Vector3f;
 
@@ -179,7 +180,7 @@ public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
         }
         mHandler.removeCallbacks(mDrawFrame);
         if (mVisible) {
-            mHandler.postDelayed(mDrawFrame, 20);
+            mHandler.postDelayed(mDrawFrame, 30);
         }
     }
 
@@ -251,7 +252,20 @@ public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
         drawFrame();
     }
 
-    public void clearBitmap() {
+    @Override
+    public void setVisibility(int visibility) {
+    	super.setVisibility(visibility);
+    	if (visibility == View.GONE || visibility == View.INVISIBLE){
+    		clearBitmap();
+    		mHandler.removeCallbacks(mDrawFrame);
+    		mVisible = false;
+    	} else {
+    		mVisible = true;
+    		mHandler.postDelayed(mDrawFrame, 100);
+    	}
+    }
+
+    private void clearBitmap() {
         if (mBitmap != null && !mBitmap.isRecycled()) {
             mBitmap.recycle();
             mBitmap = null;

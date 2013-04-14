@@ -16,10 +16,11 @@ import com.albaniliu.chuangxindemo.util.Utils;
 import com.albaniliu.chuangxindemo.widget.LargePicGallery.SingleTapListner;
 
 public class ViewPagerAdapter extends PagerAdapter {
-	private static final int BUFF_MAX = 3;
+	private static final int BUFF_MAX = 5;
 
 	private ArrayList<ShowingNode> mShowingNodes = new ArrayList<ShowingNode>();
 	private SingleTapListner mListener;
+	private int mGCount = 0;
 
     public ViewPagerAdapter(File folder, SingleTapListner listener) {
     	mListener = listener;
@@ -47,6 +48,11 @@ public class ViewPagerAdapter extends PagerAdapter {
     	BaseImageView view = (BaseImageView) arg2;
     	view.setImageBitmap(null);
     	((ViewPager) collection).removeView(view);
+    	mGCount++;
+    	if (mGCount == BUFF_MAX) {
+    		System.gc();
+    		mGCount = 0;
+    	}
     }
 
     @Override
@@ -62,10 +68,6 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override
     public int getCount() {
         return mShowingNodes.size();
-    }
-
-    public int getViewIndex(int postion) {
-        return postion % BUFF_MAX;
     }
 
     @Override
@@ -85,7 +87,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         }
         return mBuffImage[viewIndex];
         */
-    	Bitmap bitmap = Utils.createBitmapByFilePath(mShowingNodes.get(position).getPath(), 1024);
+    	Bitmap bitmap = Utils.createBitmapByFilePath(mShowingNodes.get(position).getPath(), 800);
     	BaseImageView view = new BaseImageView(collection.getContext());
     	view.setTapUpListener(mListener);
         view.setImageBitmap(bitmap);
