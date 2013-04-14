@@ -196,6 +196,8 @@ public class ImageShow extends Activity {
         i.setClass(this, Downloader.class);
         this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
         mInodePath = getIntent().getStringExtra("inode_path");
+        
+        Log.d(TAG, "~~ InodePath = " + mInodePath);
         if (!mSlideShowMode) {
             mCurrentIndex  = getIntent().getIntExtra("index", 0);
         } else {
@@ -231,9 +233,8 @@ public class ImageShow extends Activity {
                 JSONObject obj;
                 try {
                     obj = array.getJSONObject(i);
-                    Boolean file = obj.getBoolean("file");
                     boolean image = TextUtils.equals("image", obj.getString("attrib"));
-                    if ((file == null || file) && image) {
+                    if (image) {
                         String path = obj.getString("path");
                         String name = obj.getString("name");
                         String content = obj.getString("content");
@@ -244,7 +245,6 @@ public class ImageShow extends Activity {
                         mSkipCount++;
                     }
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }

@@ -68,7 +68,7 @@ public class LargePicGallery extends ViewPager {
     public boolean onTouchEvent(MotionEvent event) {
         imageView = getImageView();
 
-        if (imageView.isZoomIn()) {
+        if (imageView == null || imageView.isZoomIn()) {
             return false;
         }
         return super.onTouchEvent(event);
