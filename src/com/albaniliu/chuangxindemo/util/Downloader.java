@@ -147,6 +147,19 @@ public class Downloader extends Service {
 	                } else {
 	                	HTTPClient.getStreamFromUrl(path, fileName);
 	                }
+	                
+	                if (obj.has("pic")) {
+	                	String picPath = HTTPClient.HOST + obj.getString("pic");
+	                	String picName = path.substring(path.lastIndexOf('/') + 1);
+	                	String picFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
+		                        + picName;
+	                	File picFile = new File(picFileName);
+		                if (picFile.exists()) {
+		                    // 
+		                } else {
+		                	HTTPClient.getStreamFromUrl(picPath, picFileName);
+		                }
+	                }
                 }
             }
         }
