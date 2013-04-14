@@ -16,9 +16,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:paddingBottom="9px"
-        android:paddingTop="9px"
-        android:paddingLeft="25px"
+        android:paddingBottom="8px"
+        android:paddingTop="8px"
+        android:paddingLeft="40px"
         android:orientation="horizontal"
         android:background="#88000000" >
 
