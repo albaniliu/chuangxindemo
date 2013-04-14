@@ -160,6 +160,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         mPopup = (LinearLayout) findViewById(R.id.menu_pop_up);
         Button bMore = (Button) findViewById(R.id.menu_more);
         bMore.setVisibility(View.GONE);
+        findViewById(R.id.line).setVisibility(View.GONE);
         int popupButtonCount = mPopup.getChildCount();
         for (int index = 0; index < popupButtonCount; index++) {
             mPopup.getChildAt(index).setOnClickListener(this);

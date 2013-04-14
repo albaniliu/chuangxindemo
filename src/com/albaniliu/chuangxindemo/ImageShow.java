@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -40,8 +41,9 @@ public class ImageShow extends Activity {
     private LinearLayout mFlowBar;
     private TextView mFooter;
     private LargePicGallery mPager;
-    private String mInodeDes = "3,3";
+    private String mInodePath = "3,3";
     private int mCurrentIndex = 0;
+    private int mSkipCount = 0;
     private SlideShow mSlideshow;
     private boolean mSlideShowMode = false;
     private RandomDataSource mRandomDataSource;
@@ -76,6 +78,7 @@ public class ImageShow extends Activity {
             switch (msg.what) {
                 case GET_NODE_DONE:
                     ArrayList<ShowingNode> nodes = parseFilesPath(mCurrentInode);
+                    mCurrentIndex -= mSkipCount;
                     mRandomDataSource = new RandomDataSource(nodes, mCurrentIndex);
                     if (mSlideShowMode) {
                         mSlideshow.setDataSource(mRandomDataSource);
@@ -83,6 +86,7 @@ public class ImageShow extends Activity {
                         mAdapter = new ViewPagerAdapter(nodes, mListener);
                         mPager.setAdapter(mAdapter);
                         mFooter.setText(mAdapter.getName(mCurrentIndex));
+                        mPager.setCurrentItem(mCurrentIndex);
                     }
                     break;
 
@@ -99,7 +103,7 @@ public class ImageShow extends Activity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             mDownloadService = ((Downloader.MyBinder) service).getService();
             Log.v(TAG, Boolean.toString(mDownloadService.isFinished()));
-            mCurrentInode = mDownloadService.getLeaf(mInodeDes);
+            mCurrentInode = mDownloadService.getLeaf(mInodePath);
             mHanler.sendEmptyMessage(GET_NODE_DONE);
         }
 
@@ -191,9 +195,9 @@ public class ImageShow extends Activity {
         Intent i = new Intent();
         i.setClass(this, Downloader.class);
         this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
+        mInodePath = getIntent().getStringExtra("inode_path");
         if (!mSlideShowMode) {
             mCurrentIndex  = getIntent().getIntExtra("index", 0);
-            mInodeDes = getIntent().getStringExtra("inode");
         } else {
             mCurrentIndex = 0;
         }
@@ -201,12 +205,6 @@ public class ImageShow extends Activity {
         mHanler.postDelayed(mToggleRunnable, 5000);
     }
     
-    @Override
-    public void onResume() {
-        super.onResume();
-        mPager.setCurrentItem(mCurrentIndex);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -225,6 +223,7 @@ public class ImageShow extends Activity {
 
     private ArrayList<ShowingNode> parseFilesPath(FInode inode) {
         ArrayList<ShowingNode> nodes = new ArrayList<ShowingNode>();
+        mSkipCount = 0;
         JSONArray array = inode.getDirs();
         if (array != null) {
             int count  = array.length();
@@ -232,12 +231,18 @@ public class ImageShow extends Activity {
                 JSONObject obj;
                 try {
                     obj = array.getJSONObject(i);
-                    String path = obj.getString("path");
-                    String name = obj.getString("name");
-                    String content = obj.getString("content");
-                    int start = path.lastIndexOf('/') + 1;
-                    String nodePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/" + path.substring(start);
-                    nodes.add(new ShowingNode(nodePath, name, content));
+                    Boolean file = obj.getBoolean("file");
+                    boolean image = TextUtils.equals("image", obj.getString("attrib"));
+                    if ((file == null || file) && image) {
+                        String path = obj.getString("path");
+                        String name = obj.getString("name");
+                        String content = obj.getString("content");
+                        int start = path.lastIndexOf('/') + 1;
+                        String nodePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/" + path.substring(start);
+                        nodes.add(new ShowingNode(nodePath, name, content));
+                    } else {
+                        mSkipCount++;
+                    }
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
