@@ -48,8 +48,15 @@ public class Downloader extends Service {
         }
 	}
 	
-	public void refresh() {
+	public void refreshForce() {
 		if (downloadThread == null || !downloadThread.isAlive()) {
+			downloadThread = new DownloadThread();
+	        downloadThread.start();
+		}
+	}
+	
+	public void refresh() {
+		if (allDir.length() == 0) {
 			downloadThread = new DownloadThread();
 	        downloadThread.start();
 		}
