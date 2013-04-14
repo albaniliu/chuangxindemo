@@ -251,4 +251,14 @@ public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
         drawFrame();
     }
 
+    public void clearBitmap() {
+        if (mBitmap != null && !mBitmap.isRecycled()) {
+            mBitmap.recycle();
+            mBitmap = null;
+        }
+        if (mQueuedBitmap != null && !mQueuedBitmap.isRecycled()) {
+            mQueuedBitmap.recycle();
+            mQueuedBitmap = null;
+        }
+    }
 }

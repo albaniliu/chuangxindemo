@@ -154,6 +154,12 @@ public class ImageShow extends Activity {
             mFooter.startAnimation(animDown);
         }
     }
+    
+    private void showBarDirectly() {
+        mFlowBar.setVisibility(View.VISIBLE);
+        mFooter.setVisibility(View.VISIBLE);
+        mHanler.postDelayed(mToggleRunnable, 5000);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +181,8 @@ public class ImageShow extends Activity {
                 @Override
                 public void onClick(View v) {
                     mSlideshow.setVisibility(View.GONE);
+                    mSlideshow.clearBitmap();
+                    showBarDirectly();
                 }
             });
         }
@@ -216,6 +224,17 @@ public class ImageShow extends Activity {
 
     public void onBackClick(View view) {
         onBackPressed();
+    }
+    
+    @Override
+    public void onBackPressed() {
+        if (!mSlideShowMode && mSlideshow.getVisibility() == View.VISIBLE) {
+            mSlideshow.setVisibility(View.GONE);
+            mSlideshow.clearBitmap();
+            showBarDirectly();
+            return;
+        }
+        super.onBackPressed();
     }
 
     public void onSlideClick(View view) {
