@@ -102,19 +102,34 @@ public class HTTPClient {
 	public static JSONArray getJSONArrayFromUrl(String url)
 			throws SocketTimeoutException, MalformedURLException, IOException,
 			JSONException {
+		String result = "";
 		InputStream inputStream = null;
-		URLConnection urlConn_sourceRecommend = getJSONHttpConnection(url);
-		urlConn_sourceRecommend.connect();
-		inputStream = urlConn_sourceRecommend.getInputStream();
-		
-		ByteArrayOutputStream bao = new ByteArrayOutputStream();
-		byte[] temp = new byte[1024];
-		int count = 0;
-		while ((count = inputStream.read(temp)) >= 0) {
-			bao.write(temp, 0, count);
+		ByteArrayOutputStream bao = null;
+		int retry  = 3;
+		while (retry-- > 0) {
+			try {
+				URLConnection urlConn_sourceRecommend = getJSONHttpConnection(url);
+				urlConn_sourceRecommend.connect();
+				inputStream = urlConn_sourceRecommend.getInputStream();
+				bao = new ByteArrayOutputStream();
+				byte[] temp = new byte[1024];
+				int count = 0;
+				while ((count = inputStream.read(temp)) >= 0) {
+					bao.write(temp, 0, count);
+				}
+				result = new String(bao.toByteArray());
+				Log.v(url, result);
+				break;
+			} catch(Exception e) {
+				e.printStackTrace();
+			} finally {
+				if (inputStream != null) 
+					inputStream.close();
+				if (bao != null) {
+					bao.close();
+				}
+			}
 		}
-		String result = new String(bao.toByteArray());
-		Log.v(url, result);
 		return new JSONArray(result);
 		
 //		String result = doConnect(new HttpGet(url));
@@ -126,21 +141,35 @@ public class HTTPClient {
             JSONException {
         // 注释掉从文件取结果，这个功能没有要求
         InputStream inputStream = null;
-            URLConnection urlConn_sourceRecommend = getJSONHttpConnection(url);
-            urlConn_sourceRecommend.connect();
-            inputStream = urlConn_sourceRecommend.getInputStream();
-        String tmpFileName = path + ".tmp";
-        BufferedOutputStream bao = new BufferedOutputStream(new FileOutputStream(tmpFileName));
-        byte[] temp = new byte[1024];
-        int count = 0;
-        while ((count = inputStream.read(temp)) >= 0) {
-            bao.write(temp, 0, count);
+        BufferedOutputStream bao = null;
+        int retry = 3;
+        while (retry-- > 0) {
+        	try {
+		        URLConnection urlConn_sourceRecommend = getJSONHttpConnection(url);
+		        urlConn_sourceRecommend.connect();
+		        inputStream = urlConn_sourceRecommend.getInputStream();
+		        String tmpFileName = path + ".tmp";
+		        bao = new BufferedOutputStream(new FileOutputStream(tmpFileName));
+		        byte[] temp = new byte[1024];
+		        int count = 0;
+		        while ((count = inputStream.read(temp)) >= 0) {
+		            bao.write(temp, 0, count);
+		        }
+		        File file = new File(path);
+		        File tmpFile = new File(tmpFileName);
+		    	tmpFile.renameTo(file);
+		    	break;
+        	} catch (Exception e) {
+        		e.printStackTrace();
+        	} finally {
+        		if (inputStream != null) {
+        			inputStream.close();
+        		}
+        		if (bao != null) {
+        			bao.close();
+        		}
+        	}
         }
-        bao.close();
-        
-        File file = new File(path);
-        File tmpFile = new File(tmpFileName);
-    	tmpFile.renameTo(file);
         return true;
     }
 

@@ -90,8 +90,8 @@ public class Downloader extends Service {
         	int process = 0;
             try {
             	FInode tmpRoot = new FInode();
-//                allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX + "?timestamp=" + System.currentTimeMillis());
-                allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX);
+                allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX + "?timestamp=" + System.currentTimeMillis());
+//                allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX);
                 tmpRoot.setDirs(allDir);
                 download(tmpRoot, allDir);
                 root = tmpRoot;
@@ -109,14 +109,14 @@ public class Downloader extends Service {
         
         void download(FInode parent, JSONArray json) throws Exception {
         	int index = 0;
-        	for (int i = 0; i < 4 && i < json.length() && !Thread.currentThread().isInterrupted(); i++) {
+        	for (int i = 0; i < json.length() && !Thread.currentThread().isInterrupted(); i++) {
                 JSONObject obj = (JSONObject) json.get(i);
                 if (obj.has("url")) {
                 	FInode inode = new FInode(parent);
 	                String url = HTTPClient.HOST + obj.getString("url");
 	                Log.v(TAG, "url: " + url);
-//	                JSONArray jArray = HTTPClient.getJSONArrayFromUrl(url + "?timestamp=" + System.currentTimeMillis());
-	                JSONArray jArray = HTTPClient.getJSONArrayFromUrl(url);
+	                JSONArray jArray = HTTPClient.getJSONArrayFromUrl(url + "?timestamp=" + System.currentTimeMillis());
+//	                JSONArray jArray = HTTPClient.getJSONArrayFromUrl(url);
 	                inode.setDirs(jArray);
 	                download(inode, jArray);
 	                inode.setIndex(index);
