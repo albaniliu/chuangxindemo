@@ -34,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.albaniliu.chuangxindemo.ImageShow;
 import com.albaniliu.chuangxindemo.R;
 import com.albaniliu.chuangxindemo.data.FInode;
 import com.albaniliu.chuangxindemo.util.Downloader;
@@ -222,6 +223,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         for (int i = 0; i < num && totalIndex < allDir.length(); totalIndex++) {
         	LinearLayout classfiImage = (LinearLayout) getLayoutInflater().inflate(
                     R.layout.classfi_image, null);
+        	
         	JSONObject obj;
 			try {
 				obj = (JSONObject) allDir.get(totalIndex);
@@ -232,6 +234,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 	            FrameLayout frame = (FrameLayout) classfiImage.findViewById(R.id.left);
 	            MyOnClickListener listener = new MyOnClickListener();
 	            listener.setIndex(totalIndex);
+	            listener.setFile(obj.getBoolean("file"));
 	            frame.setOnClickListener(listener);
 	            ImageView image = (ImageView) classfiImage.findViewById(R.id.image_left);
 	            String coverPath = obj.getString("cover");
@@ -244,6 +247,11 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 	            
 	            TextView txt = (TextView) classfiImage.findViewById(R.id.des);
 				txt.setText(obj.getString("name"));
+				
+				if (obj.getBoolean("file")) {
+					LinearLayout des = (LinearLayout) classfiImage.findViewById(R.id.des_layout);
+					des.setVisibility(View.GONE);
+				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -347,8 +355,9 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     }
     
     class MyOnClickListener implements OnClickListener {
-
     	private int index;
+    	private boolean isFile;
+
 		public int getIndex() {
 			return index;
 		}
@@ -373,12 +382,26 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                 Log.v(TAG, "inode_path: " + value.toString());
                 bundle.putString("inode_path", value.toString());
                 bundle.putBoolean("image", isImage);
-                Intent it = new Intent(HomeActivity.this, ImageGridActivity.class);
-                it.putExtras(bundle);
-                startActivity(it);
+                if (isFile) {
+                	Intent intent = new Intent();
+                    intent.putExtra("index", index);
+                    intent.putExtra("inode_path", value.toString());
+                    intent.setClass(getApplicationContext(), ImageShow.class);
+                    startActivity(intent);
+                } else {
+	                Intent it = new Intent(HomeActivity.this, ImageGridActivity.class);
+	                it.putExtras(bundle);
+	                startActivity(it);
+                }
         	} else {
         		setDefaultClassfiView();
         	}
+		}
+		public boolean isFile() {
+			return isFile;
+		}
+		public void setFile(boolean isFile) {
+			this.isFile = isFile;
 		}
     	
     }
