@@ -71,7 +71,7 @@ public class Downloader extends Service {
 	}
 	
 	public FInode getLeaf(String path) {
-		String []paths = path.split(",");
+		String paths[] = path.split(",");
 		FInode res = new FInode();
 		FInode tmp = root;
 		for (int i = 0; i < paths.length; i++) {
