@@ -20,15 +20,15 @@
 
         <ImageView
             android:id="@+id/image_left"
-            android:layout_width="344px"
-            android:layout_height="344px"
+            android:layout_width="240px"
+            android:layout_height="240px"
             android:contentDescription="@string/classfi_line_left"
             android:scaleType="fitXY"
             android:src="@drawable/grid_item_bg" />
 
         <LinearLayout
             android:id="@+id/des_layout"
-            android:layout_width="344px"
+            android:layout_width="240px"
             android:layout_height="46px"
             android:layout_gravity="bottom"
             android:background="#88000000"
