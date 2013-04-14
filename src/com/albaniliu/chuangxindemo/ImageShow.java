@@ -178,6 +178,7 @@ public class ImageShow extends Activity {
         i.setClass(this, Downloader.class);
         this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
 
+        mCurrentIndex  = getIntent().getIntExtra("index", 0);
         mHanler.postDelayed(mToggleRunnable, 5000);
     }
 
