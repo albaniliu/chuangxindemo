@@ -136,6 +136,7 @@ public class MainActivity extends Activity {
                 	if (!mTouch) {
 	                    mTouch = true;
 	                    Intent it = new Intent(MainActivity.this, HomeActivity.class);
+	                    it.putExtra("image", true);
 	                    startActivity(it);
                 	}
                     return true;
@@ -143,6 +144,7 @@ public class MainActivity extends Activity {
                 	if (!mTouch) {
 	                    mTouch = true;
 	                    Intent it = new Intent(MainActivity.this, HomeActivity.class);
+	                    it.putExtra("image", false);
 	                    startActivity(it);
                 	}
                     return true;

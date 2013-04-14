@@ -43,6 +43,8 @@ import com.albaniliu.chuangxindemo.util.Utils;
 public class HomeActivity extends Activity implements View.OnClickListener {
 
 	private static String TAG = "HomeActivity";
+	
+	private boolean isImage = true;
 
     int[] contentDesID = new int[] {
             R.string.beauty, R.string.creative,
@@ -138,6 +140,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         Log.i("HomeActivity", "onCreate");
         super.onCreate(savedInstanceState);
+        isImage = getIntent().getBooleanExtra("image", true);
         this.setContentView(R.layout.home_activity);
         ResourceUtils.setContext(this);
         classfiView = (LinearLayout) this.findViewById(R.id.classfi_view);
@@ -215,15 +218,20 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         	padding = 12;
         }
         classfiLine.setPadding(padding, 1, padding, 0);
-        for (int i = 0; i < num && totalIndex < allDir.length(); i++, totalIndex++) {
-            LinearLayout classfiImage = (LinearLayout) getLayoutInflater().inflate(
+        for (int i = 0; i < num && totalIndex < allDir.length(); totalIndex++) {
+        	LinearLayout classfiImage = (LinearLayout) getLayoutInflater().inflate(
                     R.layout.classfi_image, null);
-            FrameLayout frame = (FrameLayout) classfiImage.findViewById(R.id.left);
-            MyOnClickListener listener = new MyOnClickListener();
-            listener.setIndex(totalIndex);
-            frame.setOnClickListener(listener);
-            try {
-            	JSONObject obj = (JSONObject) allDir.get(totalIndex);
+        	JSONObject obj;
+			try {
+				obj = (JSONObject) allDir.get(totalIndex);
+	            if ((obj.getString("attrib").equals("image") && !isImage)
+	            		|| (!obj.getString("attrib").equals("image") && isImage)) {
+	            	continue;
+	            }
+	            FrameLayout frame = (FrameLayout) classfiImage.findViewById(R.id.left);
+	            MyOnClickListener listener = new MyOnClickListener();
+	            listener.setIndex(totalIndex);
+	            frame.setOnClickListener(listener);
 	            ImageView image = (ImageView) classfiImage.findViewById(R.id.image_left);
 	            String coverPath = obj.getString("cover");
 	            Log.v(TAG, coverPath);
@@ -240,6 +248,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 				e.printStackTrace();
 			}
             classfiLine.addView(classfiImage);
+            i++;
         }
 
         classfiView.addView(classfiLine);
