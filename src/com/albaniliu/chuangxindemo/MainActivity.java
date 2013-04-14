@@ -81,6 +81,8 @@ public class MainActivity extends Activity {
 	int mResources[] = {R.drawable.meinv0, R.drawable.meinv1, R.drawable.meinv2, R.drawable.meinv3};
 	int mBtnRes[] = {R.drawable.pic_manage_icon, R.drawable.video_manage_icon};
 	int index = 0;
+	private Rect mLeftButton = new Rect();
+	private Rect mRightButton = new Rect();
 	
 	private MyView myView;
 
@@ -124,13 +126,13 @@ public class MainActivity extends Activity {
 			float y = event.getRawY();
 			Log.i("MyView", "onTouch " + event.getRawX() + " " + event.getRawY());
 			
-			if (y > 500 && y < 700) {
-    			if (x > 160 && x < 360) {
+			if (mLeftButton != null && y > mLeftButton.top && y < mLeftButton.bottom) {
+    			if (x > mLeftButton.left && x < mLeftButton.right) {
     				mTouch = true;
     				Intent it = new Intent(MainActivity.this, HomeActivity.class);
     				startActivity(it);
     				return true;
-    			} else if (x > 420 && x < 620) {
+    			} else if (x > mRightButton.left && x < mRightButton.right) {
     			    mTouch = true;
                     Intent it = new Intent(MainActivity.this, HomeActivity.class);
                     startActivity(it);
@@ -158,10 +160,21 @@ public class MainActivity extends Activity {
 			canvas.drawBitmap(bitmap, srcRect, dstRect, paint);
 
 			Bitmap button = BitmapFactory.decodeResource(getResources(), mBtnRes[0]);
-			canvas.drawBitmap(button, 168, 508, paint);
+			srcRect = new Rect(0, 0, button.getWidth(), button.getHeight());
+			int width = getWidth();
+			int height = getHeight();
+			int buttonSize = height > width ? 192 : 256;
+			mRightButton.top = mLeftButton.top = (height - buttonSize) / 2;
+			mRightButton.bottom = mLeftButton.bottom = mLeftButton.top + buttonSize;
+			mLeftButton.left = (width - buttonSize * 2 - 60) / 2;
+			mLeftButton.right = mLeftButton.left + buttonSize;
+			mRightButton.left = mLeftButton.right + 60;
+			mRightButton.right = mRightButton.left + buttonSize;
+			
+			canvas.drawBitmap(button, srcRect, mLeftButton, paint);
 			
 			button = BitmapFactory.decodeResource(getResources(), mBtnRes[1]);
-            canvas.drawBitmap(button, 420, 508, paint);
+            canvas.drawBitmap(button, srcRect, mRightButton, paint);
 			
 			index = ++index % mResources.length;
 		}
