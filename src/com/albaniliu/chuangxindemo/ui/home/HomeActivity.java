@@ -140,8 +140,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         classfiView.setVisibility(View.GONE);
         if (dialog == null) {
             dialog = new ProgressDialog(HomeActivity.this);
-            dialog.setTitle("please wait");
-            dialog.setMessage("downloading!!");
+            dialog.setTitle(R.string.dialog_title);
+            dialog.setMessage("请稍等..");
         }
         dialog.show();
         allDir = new JSONArray();
