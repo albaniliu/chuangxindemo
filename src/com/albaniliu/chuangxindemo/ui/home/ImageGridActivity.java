@@ -181,6 +181,8 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
                 
                 @Override
                 public void onClick(View v) {
+                    mPopup.setVisibility(View.INVISIBLE);
+                    mPopupVisible = false;
                     Intent intent = new Intent();
                     intent.putExtra("line", line);
                     intent.putExtra("index", index);
@@ -211,13 +213,13 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
     @Override
     public void onClick(View v) {
         int id = v.getId();
+        hidePopup();
         switch (id) {
             case R.id.menu_refresh:
                 break;
             case R.id.menu_more:
                 break;
             case R.id.whole:
-                hidePopup();
                 break;
         }
 

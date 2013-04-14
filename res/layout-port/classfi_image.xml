@@ -29,9 +29,9 @@
         <LinearLayout
             android:id="@+id/des_layout"
             android:layout_width="344px"
-            android:layout_height="30px"
+            android:layout_height="46px"
             android:layout_gravity="bottom"
-            android:background="#77000000"
+            android:background="#88000000"
             android:gravity="center" >
 
             <TextView

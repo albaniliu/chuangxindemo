@@ -10,9 +10,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -144,8 +146,12 @@ public class MainActivity extends Activity {
 			super.onDraw(canvas);
 			Paint paint = new Paint(); 
 			
+			Rect dstRect  = new Rect(0, 0, getWidth(), getHeight());
+			
 			Bitmap bitmap = BitmapFactory.decodeResource(getResources(), mResources[index]);
-			canvas.drawBitmap(bitmap, 0, 0, paint);
+			Rect srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+			canvas.drawBitmap(bitmap, srcRect, dstRect, paint);
+
 			Bitmap button = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
 			canvas.drawBitmap(button, 100, 100, paint);
 			
@@ -237,16 +243,6 @@ public class MainActivity extends Activity {
 	 */
 	public void onSplashClosed() {
 		mSplash.setVisibility(View.GONE);
-//		mFirstLayout.setVisibility(View.VISIBLE);
-		
-//		Bundle bundle = new Bundle();
-//		bundle.putInt(BundleKeyWord.KEY_DATA_SOURCE,
-//				ImageDataManager.DATADEFAULT);
-//		bundle.putString(BundleKeyWord.KEY_TITLE,
-//				getString(R.string.app_tabbar_wallpaper_home));
-//		mViewManager.showView(HomeActivity.Id, HomeActivity.class, false,
-//				bundle, true);
-
 		myView = new MyView(this);
 		setContentView(myView);
 	}

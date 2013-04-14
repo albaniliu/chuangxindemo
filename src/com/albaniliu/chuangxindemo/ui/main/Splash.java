@@ -33,9 +33,7 @@ public class Splash extends UIWidget {
     protected void loadResources() {
         LayoutInflater inflater = ( LayoutInflater ) getContext().getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE );
-        inflater.inflate( R.layout.splash, this, true );
-//        mTxtSplash = ( TextView ) findViewById( R.id.txtSplash );
-//        mTxtUpdate = ( TextView ) findViewById( R.id.txtSplashUpdate );
+        inflater.inflate( R.layout.splash, this, true);
     }
 
     /**

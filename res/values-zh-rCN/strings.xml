@@ -4,5 +4,5 @@
     <string name="btn_text_slideshow">幻灯片</string>
     
     <string name="menu_refresh">刷新</string>
-    <string name="menu_other">...</string>
+    <string name="menu_other">幻灯片</string>
 </resources>
