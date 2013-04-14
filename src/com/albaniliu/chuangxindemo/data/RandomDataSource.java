@@ -59,10 +59,10 @@ import android.provider.MediaStore.Video;
 import android.util.Log;
 
 import com.albaniliu.chuangxindemo.ImageShow.ShowingNode;
-import com.albaniliu.chuangxindemo.Slideshow;
 import com.albaniliu.chuangxindemo.util.Utils;
+import com.albaniliu.chuangxindemo.widget.SlideShow;
 
-public class RandomDataSource implements Slideshow.DataSource {
+public class RandomDataSource implements SlideShow.DataSource {
 	private static final String TAG = "RandomDataSource";
 	private static final String USER_AGENT = "Demo-ImageDownload";
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.albaniliu.chuangxindemo.data.RandomDataSource;
+import com.albaniliu.chuangxindemo.widget.SlideShow;
 
 public class SlideShowActivity extends Activity {
 
@@ -13,7 +14,7 @@ public class SlideShowActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Slideshow slideshow = new Slideshow(this);
+        SlideShow slideshow = new SlideShow(this);
         slideshow.setDataSource(new RandomDataSource());
         slideshow.setOnClickListener(new View.OnClickListener() {
             @Override

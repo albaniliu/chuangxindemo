@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.albaniliu.chuangxindemo;
+package com.albaniliu.chuangxindemo.widget;
 
 //import android.app.Service;
 import android.content.Context;
@@ -35,14 +35,14 @@ import android.view.SurfaceView;
 
 import com.albaniliu.chuangxindemo.data.Vector3f;
 
-public class Slideshow extends SurfaceView implements SurfaceHolder.Callback {
-    public Slideshow(Context context) {
+public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
+    public SlideShow(Context context) {
         super(context);
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
     }
     
-    public Slideshow(Context context, AttributeSet attr) {
+    public SlideShow(Context context, AttributeSet attr) {
         super(context, attr);
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);

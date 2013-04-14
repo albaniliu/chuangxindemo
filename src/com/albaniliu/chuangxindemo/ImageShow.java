@@ -30,6 +30,7 @@ import com.albaniliu.chuangxindemo.data.FInode;
 import com.albaniliu.chuangxindemo.data.RandomDataSource;
 import com.albaniliu.chuangxindemo.util.Downloader;
 import com.albaniliu.chuangxindemo.widget.LargePicGallery;
+import com.albaniliu.chuangxindemo.widget.SlideShow;
 import com.albaniliu.chuangxindemo.widget.LargePicGallery.SingleTapListner;
 import com.albaniliu.chuangxindemo.widget.ViewPagerAdapter;
 
@@ -43,7 +44,7 @@ public class ImageShow extends Activity {
     private LargePicGallery mPager;
     private String mPathDiscript = "3,3";
     private int mCurrentIndex = 0;
-    private Slideshow mSlideshow;
+    private SlideShow mSlideshow;
     private RandomDataSource mRandomDataSource;
 
     public static class ShowingNode {
@@ -153,7 +154,7 @@ public class ImageShow extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.largepic);
 
-        mSlideshow = (Slideshow) findViewById(R.id.slideshow);
+        mSlideshow = (SlideShow) findViewById(R.id.slideshow);
         mSlideshow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
