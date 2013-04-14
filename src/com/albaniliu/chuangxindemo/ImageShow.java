@@ -96,9 +96,8 @@ public class ImageShow extends Activity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             mDownloadService = ((Downloader.MyBinder) service).getService();
             Log.v(TAG, Boolean.toString(mDownloadService.isFinished()));
-            if (mDownloadService.isFinished()) {
-                mCurrentInode = mDownloadService.getLeaf(mPathDiscript);
-            }
+            mCurrentInode = mDownloadService.getLeaf(mPathDiscript);
+            mHanler.sendEmptyMessage(GET_NODE_DONE);
         }
 
         public void onServiceDisconnected(ComponentName name) {
