@@ -23,6 +23,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -51,7 +52,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
 
     private boolean mPopupVisible = false;
     private LinearLayout mPopup;
-    private Button mMenuBtn;
+    private ImageButton mMenuBtn;
     private ProgressDialog  dialog;
 
     private ScaleAnimation mInAnimation;
@@ -111,7 +112,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         for (int i = 0; i < popupButtonCount; i++) {
             mPopup.getChildAt(i).setOnClickListener(this);
         }
-        mMenuBtn = (Button) findViewById(R.id.menu_btn);
+        mMenuBtn = (ImageButton) findViewById(R.id.menu_btn);
 
         Intent i  = new Intent();
         i.setClass(ImageGridActivity.this, Downloader.class);
@@ -129,6 +130,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
     private void showPopup() {
         if (!mPopupVisible) {
             mPopupVisible = true;
+            mMenuBtn.setImageResource(R.drawable.titlebar_icon_more_hl);
             if (mInAnimation == null) {
                 mInAnimation = new ScaleAnimation(
                         0, 1, 0, 1, mPopup.getWidth() - Utils.dip2px(this, 19), 0);
@@ -160,6 +162,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
     private void hidePopup() {
         if (mPopupVisible) {
             mPopupVisible = false;
+            mMenuBtn.setImageResource(R.drawable.titlebar_icon_more);
             if (mOutAnimation == null) {
                 mOutAnimation = new ScaleAnimation(
                         1, 0, 1, 0, mPopup.getWidth() - Utils.dip2px(this, 19), 0);
@@ -179,6 +182,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         mPopup.setVisibility(View.INVISIBLE);
+                        mMenuBtn.setImageResource(R.drawable.more_btn_selector);
                     }
                 });
             }
@@ -242,7 +246,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
 			}
             
             classfiLine.addView(classfiImage);
-            final int index = i;
+            final int index = num * line + i;
             frame.setOnClickListener(new View.OnClickListener() {
                 
                 @Override
@@ -250,7 +254,6 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
                     mPopup.setVisibility(View.INVISIBLE);
                     mPopupVisible = false;
                     Intent intent = new Intent();
-                    intent.putExtra("line", line);
                     intent.putExtra("index", index);
                     intent.setClass(getApplicationContext(), ImageShow.class);
                     startActivity(intent);

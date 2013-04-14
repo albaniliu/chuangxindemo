@@ -26,8 +26,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.ScaleAnimation;
-import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -67,7 +67,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     
     private boolean mPopupVisible = false;
     private LinearLayout mPopup;
-    private Button mMenuBtn;
+    private ImageButton mMenuBtn;
 
     private ScaleAnimation mInAnimation;
     private ScaleAnimation mOutAnimation;
@@ -159,7 +159,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         for (int index = 0; index < popupButtonCount; index++) {
             mPopup.getChildAt(index).setOnClickListener(this);
         }
-        mMenuBtn = (Button) findViewById(R.id.menu_btn);
+        mMenuBtn = (ImageButton) findViewById(R.id.menu_btn);
 
         receiver = new MyReceiver();
 		IntentFilter filter = new IntentFilter();
@@ -241,6 +241,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     private void showPopup() {
         if (!mPopupVisible) {
             mPopupVisible = true;
+            mMenuBtn.setImageResource(R.drawable.titlebar_icon_more_hl);
             if (mInAnimation == null) {
                 mInAnimation = new ScaleAnimation(
                         0, 1, 0, 1, mPopup.getWidth() - Utils.dip2px(this, 19), 0);
@@ -272,6 +273,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     private void hidePopup() {
         if (mPopupVisible) {
             mPopupVisible = false;
+            mMenuBtn.setImageResource(R.drawable.titlebar_icon_more);
             if (mOutAnimation == null) {
                 mOutAnimation = new ScaleAnimation(
                         1, 0, 1, 0, mPopup.getWidth() - Utils.dip2px(this, 19), 0);
@@ -291,6 +293,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         mPopup.setVisibility(View.INVISIBLE);
+                        mMenuBtn.setImageResource(R.drawable.more_btn_selector);
                     }
                 });
             }

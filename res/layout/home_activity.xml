@@ -29,10 +29,12 @@
             android:layout_marginLeft="196px" 
             android:src="@drawable/lenovo_logo" />
 
-        <Button
+        <ImageButton
             android:id="@+id/menu_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            android:src="@drawable/more_btn_selector"
             android:layout_gravity="right"
             android:onClick="onMenuClick"
             android:text="@string/menu" />
@@ -65,7 +67,7 @@
         android:layout_alignParentRight="true"
         android:layout_below="@id/title_bar"
         android:layout_marginRight="6px"
-        android:layout_marginTop="-4px"
+        android:layout_marginTop="-16px"
         android:background="@drawable/more_bg"
         android:orientation="vertical"
         android:padding="1dp"

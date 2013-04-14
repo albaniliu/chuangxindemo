@@ -37,8 +37,8 @@
     <style name="ButtonBarButton" />
 
     <style name="PopupButton">
-        <item name="android:layout_width">150px</item>
-        <item name="android:layout_height">40px</item>
+        <item name="android:layout_width">200px</item>
+        <item name="android:layout_height">60px</item>
         <item name="android:paddingLeft">10px</item>
         <item name="android:textColor">#FFFF</item>
         <item name="android:textSize">16px</item>
