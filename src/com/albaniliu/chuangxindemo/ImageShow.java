@@ -210,7 +210,7 @@ public class ImageShow extends Activity {
                     String name = obj.getString("name");
                     String content = obj.getString("content");
                     int start = path.lastIndexOf('/') + 1;
-                    String nodePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangedemo1/" + path.substring(start);
+                    String nodePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/" + path.substring(start);
                     nodes.add(new ShowingNode(nodePath, name, content));
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block

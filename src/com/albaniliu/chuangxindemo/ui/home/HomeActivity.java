@@ -26,6 +26,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.ScaleAnimation;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -40,7 +41,8 @@ import com.albaniliu.chuangxindemo.util.ResourceUtils;
 import com.albaniliu.chuangxindemo.util.Utils;
 
 public class HomeActivity extends Activity implements View.OnClickListener {
-    private static String TAG = "HomeActivity";
+
+	private static String TAG = "HomeActivity";
 
     int[] contentDesID = new int[] {
             R.string.beauty, R.string.creative,
@@ -63,7 +65,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     private JSONArray allDir;
     private FInode currentInode;
     private int totalIndex;
-    private Downloader downloader;
+    private static Downloader downloader;
     
     private boolean mPopupVisible = false;
     private LinearLayout mPopup;
@@ -84,7 +86,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		    	if (dialog.isShowing()) {
 		    		dialog.dismiss();
 		    	}
-		    	classfiView.setVisibility(View.VISIBLE);
+		    	
 		    } else if (msg.what == MSG_DOWNLOAD_FAILED) {
 		        Toast.makeText(getBaseContext(), "下载失败", Toast.LENGTH_LONG).show();
 		        if (dialog.isShowing()) {
@@ -139,7 +141,6 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         this.setContentView(R.layout.home_activity);
         ResourceUtils.setContext(this);
         classfiView = (LinearLayout) this.findViewById(R.id.classfi_view);
-        
         classfiView.setVisibility(View.GONE);
         if (dialog == null) {
             dialog = new ProgressDialog(HomeActivity.this);
@@ -150,11 +151,11 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         allDir = new JSONArray();
         currentInode = new FInode();
         this.startService(new Intent(this , Downloader.class));
-        Intent i  = new Intent();
-        i.setClass(HomeActivity.this, Downloader.class);
-        this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
+        
         
         mPopup = (LinearLayout) findViewById(R.id.menu_pop_up);
+        Button bMore = (Button) findViewById(R.id.menu_more);
+        bMore.setVisibility(View.GONE);
         int popupButtonCount = mPopup.getChildCount();
         for (int index = 0; index < popupButtonCount; index++) {
             mPopup.getChildAt(index).setOnClickListener(this);
@@ -168,15 +169,29 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     }
     
     @Override
+   	protected void onResume() {
+   		// TODO Auto-generated method stub
+   		super.onResume();
+   		classfiView.setVisibility(View.GONE);
+   		Intent i  = new Intent();
+        i.setClass(HomeActivity.this, Downloader.class);
+        this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
+   	}
+    
+    protected void onStop() {
+    	super.onStop();
+    	this.unbindService(mServiceConnection);
+    }
+    @Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		this.unregisterReceiver(receiver);
-		this.unbindService(mServiceConnection);
 	}
 
     private void setDefaultClassfiView() {
         classfiView.removeAllViews();
+        classfiView.setVisibility(View.VISIBLE);
         totalIndex = 0;
         int line = 0;
         Log.v(TAG, Boolean.toString(downloader.isFinished()));
@@ -308,6 +323,9 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         switch(v.getId()) {
             case R.id.menu_refresh:
                 downloader.refreshForce();
+                allDir = new JSONArray();
+                currentInode = new FInode();
+                setDefaultClassfiView();
                 dialog.show();
                 break;
             case R.id.menu_more:
