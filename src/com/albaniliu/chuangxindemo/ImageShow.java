@@ -1,7 +1,6 @@
 
 package com.albaniliu.chuangxindemo;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -30,8 +29,8 @@ import com.albaniliu.chuangxindemo.data.FInode;
 import com.albaniliu.chuangxindemo.data.RandomDataSource;
 import com.albaniliu.chuangxindemo.util.Downloader;
 import com.albaniliu.chuangxindemo.widget.LargePicGallery;
-import com.albaniliu.chuangxindemo.widget.SlideShow;
 import com.albaniliu.chuangxindemo.widget.LargePicGallery.SingleTapListner;
+import com.albaniliu.chuangxindemo.widget.SlideShow;
 import com.albaniliu.chuangxindemo.widget.ViewPagerAdapter;
 
 public class ImageShow extends Activity {
@@ -210,7 +209,9 @@ public class ImageShow extends Activity {
                     String path = obj.getString("path");
                     String name = obj.getString("name");
                     String content = obj.getString("content");
-                    nodes.add(new ShowingNode(path, name, content));
+                    int start = path.lastIndexOf('/') + 1;
+                    String nodePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangedemo1/" + path.substring(start);
+                    nodes.add(new ShowingNode(nodePath, name, content));
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();

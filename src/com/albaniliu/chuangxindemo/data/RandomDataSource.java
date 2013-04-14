@@ -78,11 +78,11 @@ public class RandomDataSource implements SlideShow.DataSource {
     public static final String[] THUMBNAIL_PROJECTION = new String[] { Images.ImageColumns._ID, Images.ImageColumns.DATE_ADDED,
             Images.ImageColumns.DATA, Images.ImageColumns.ORIENTATION };
 
-    public static final String LIANG_BUCKET_NAME = Environment.getExternalStorageDirectory().toString() + "/liangdemo1";
+    public static final String LIANG_BUCKET_NAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1";
     public static final int LIANG_BUCKET_ID = getBucketId(LIANG_BUCKET_NAME);
     
     private ArrayList<String> mFilesPath = new ArrayList<String>();
-    private String mPath = Environment.getExternalStorageDirectory() + "/liangdemo1";
+    private String mPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1";
     private File mTestFolder;
     private boolean mFromDB = false;
     /**
