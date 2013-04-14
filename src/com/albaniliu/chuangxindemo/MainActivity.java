@@ -79,7 +79,10 @@ public class MainActivity extends Activity {
 	
 	private PlayThread mFlashThread;
 	int mResources[] = {R.drawable.meinv0, R.drawable.meinv1, R.drawable.meinv2, R.drawable.meinv3};
+	int mBtnRes[] = {R.drawable.pic_manage_icon, R.drawable.video_manage_icon};
 	int index = 0;
+	private Rect mLeftButton = new Rect();
+	private Rect mRightButton = new Rect();
 	
 	private MyView myView;
 
@@ -109,8 +112,6 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-//		MyView v = new MyView(this);
-//		setContentView(v);
 		initFields();
 //		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		mHandler.sendEmptyMessageDelayed(MSG_START_ACTIVITY, 20000);
@@ -126,10 +127,18 @@ public class MainActivity extends Activity {
 			float y = event.getRawY();
 			Log.i("MyView", "onTouch " + event.getRawX() + " " + event.getRawY());
 			
-			if (x > 100 && x < 200 && y > 100 && y < 200) {
-				mTouch = true;
-				Intent it = new Intent(MainActivity.this, HomeActivity.class);
-				startActivity(it);
+			if (mLeftButton != null && y > mLeftButton.top && y < mLeftButton.bottom) {
+    			if (x > mLeftButton.left && x < mLeftButton.right) {
+    				mTouch = true;
+    				Intent it = new Intent(MainActivity.this, HomeActivity.class);
+    				startActivity(it);
+    				return true;
+    			} else if (x > mRightButton.left && x < mRightButton.right) {
+    			    mTouch = true;
+                    Intent it = new Intent(MainActivity.this, HomeActivity.class);
+                    startActivity(it);
+                    return true;
+    			}
 			}
 			return super.onTouchEvent(event);
 		}
@@ -145,20 +154,31 @@ public class MainActivity extends Activity {
 		public void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
 			Paint paint = new Paint(); 
-			
 			Rect dstRect  = new Rect(0, 0, getWidth(), getHeight());
 			
 			Bitmap bitmap = BitmapFactory.decodeResource(getResources(), mResources[index]);
 			Rect srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
 			canvas.drawBitmap(bitmap, srcRect, dstRect, paint);
 
-			Bitmap button = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
-			canvas.drawBitmap(button, 100, 100, paint);
+			Bitmap button = BitmapFactory.decodeResource(getResources(), mBtnRes[0]);
+			srcRect = new Rect(0, 0, button.getWidth(), button.getHeight());
+			int width = getWidth();
+			int height = getHeight();
+			int buttonSize = height > width ? 192 : 256;
+			mRightButton.top = mLeftButton.top = (height - buttonSize) / 2;
+			mRightButton.bottom = mLeftButton.bottom = mLeftButton.top + buttonSize;
+			mLeftButton.left = (width - buttonSize * 2 - 60) / 2;
+			mLeftButton.right = mLeftButton.left + buttonSize;
+			mRightButton.left = mLeftButton.right + 60;
+			mRightButton.right = mRightButton.left + buttonSize;
+			
+			canvas.drawBitmap(button, srcRect, mLeftButton, paint);
+			
+			button = BitmapFactory.decodeResource(getResources(), mBtnRes[1]);
+            canvas.drawBitmap(button, srcRect, mRightButton, paint);
 			
 			index = ++index % mResources.length;
-//			invalidate();
 		}
-		
 	}
 	
 	private void initFields() {	
