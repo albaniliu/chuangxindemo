@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/wrapperDemo1"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="#000000"
     android:orientation="vertical" >
 
@@ -16,11 +16,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:paddingBottom="9px"
-        android:paddingTop="9px"
-        android:paddingLeft="25px"
+        android:background="#88000000"
         android:orientation="horizontal"
-        android:background="#88000000" >
+        android:paddingBottom="9px"
+        android:paddingLeft="25px"
+        android:paddingTop="9px" >
 
         <ImageView
             android:layout_width="wrap_content"
@@ -52,8 +52,14 @@
         android:layout_width="match_parent"
         android:layout_height="50px"
         android:layout_gravity="bottom"
+        android:background="#88000000"
         android:gravity="center"
-        android:textSize="20px"
-        android:background="#88000000" />
+        android:textSize="20px" />
+
+    <com.albaniliu.chuangxindemo.widget.SlideShow
+        android:id="@+id/slideshow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
 </FrameLayout>

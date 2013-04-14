@@ -58,6 +58,7 @@ import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Video;
 import android.util.Log;
 
+import com.albaniliu.chuangxindemo.ImageShow.ShowingNode;
 import com.albaniliu.chuangxindemo.Slideshow;
 import com.albaniliu.chuangxindemo.util.Utils;
 
@@ -80,9 +81,9 @@ public class RandomDataSource implements Slideshow.DataSource {
     public static final String LIANG_BUCKET_NAME = Environment.getExternalStorageDirectory().toString() + "/liangdemo1";
     public static final int LIANG_BUCKET_ID = getBucketId(LIANG_BUCKET_NAME);
     
-    private ArrayList<File> mTestfiles = new ArrayList<File>();
+    private ArrayList<String> mFilesPath = new ArrayList<String>();
     private String mPath = Environment.getExternalStorageDirectory() + "/liangdemo1";
-    private File mTestFolder = new File(mPath);
+    private File mTestFolder;
     private boolean mFromDB = false;
     /**
      * Matches code in MediaProvider.computeBucketValues. Should be a common
@@ -90,6 +91,16 @@ public class RandomDataSource implements Slideshow.DataSource {
      */
     public static int getBucketId(String path) {
         return (path.toLowerCase(Locale.ENGLISH).hashCode());
+    }
+    
+    public RandomDataSource() {
+        super();
+        mTestFolder = new File(mPath);
+    }
+    
+    public RandomDataSource(ArrayList<ShowingNode> nodes) {
+        super();
+        createTestFile(nodes);
     }
     
     private static ImageList sList;
@@ -134,13 +145,15 @@ public class RandomDataSource implements Slideshow.DataSource {
                 ;
             }
         } else {
-            createTestFile(context, mTestFolder);
+            if (mFilesPath.size() == 0) {
+                createTestFile(mTestFolder);
+            }
             double random = Math.random();
-            random *= mTestfiles.size();
+            random *= mFilesPath.size();
             int index = (int) random;
             
             try {
-                retVal = Utils.createBitmapByFilePath(mTestfiles.get(index).getPath(), 1024);
+                retVal = Utils.createBitmapByFilePath(mFilesPath.get(index), 1024);
             } catch (OutOfMemoryError e) {
                 ;
             }
@@ -148,7 +161,7 @@ public class RandomDataSource implements Slideshow.DataSource {
         return retVal;
     }
 
-    private void createTestFile(Context context, File folder) {
+    private void createTestFile(File folder) {
         if (folder.isDirectory()) {
             File[] files = folder.listFiles(new FileFilter() {
                 @Override
@@ -158,8 +171,17 @@ public class RandomDataSource implements Slideshow.DataSource {
                 }
             });
             for (File file : files) {
-                mTestfiles.add(file);
+                mFilesPath.add(file.getPath());
             }
+        }
+    }
+    
+    private void createTestFile(ArrayList<ShowingNode> nodes) {
+        if (nodes == null || nodes.size() == 0){
+            return ;
+        }
+        for (ShowingNode node : nodes) {
+            mFilesPath.add(node.getPath());
         }
     }
 

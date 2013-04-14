@@ -10,15 +10,15 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
+import com.albaniliu.chuangxindemo.ImageShow.ShowingNode;
 import com.albaniliu.chuangxindemo.util.Utils;
 import com.albaniliu.chuangxindemo.widget.LargePicGallery.SingleTapListner;
 
 public class ViewPagerAdapter extends PagerAdapter {
 	private static final int BUFF_MAX = 3;
 
-	private ArrayList<File> mTestfiles = new ArrayList<File>();
+	private ArrayList<ShowingNode> mShowingfiles = new ArrayList<ShowingNode>();
 	private SingleTapListner mListener;
 
     public ViewPagerAdapter(File folder, SingleTapListner listener) {
@@ -32,9 +32,14 @@ public class ViewPagerAdapter extends PagerAdapter {
                 }
             });
     		for (File file : files) {
-    			mTestfiles.add(file);
+    			mShowingfiles.add(new ShowingNode(file.getPath(), "", ""));
     		}
     	}
+    }
+    
+    public ViewPagerAdapter(ArrayList<ShowingNode> nodes, SingleTapListner listener) {
+        mListener = listener;
+        mShowingfiles = nodes;
     }
 
     @Override
@@ -56,7 +61,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return mTestfiles.size();
+        return mShowingfiles.size();
     }
 
     public int getViewIndex(int postion) {
@@ -80,7 +85,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         }
         return mBuffImage[viewIndex];
         */
-    	Bitmap bitmap = Utils.createBitmapByFilePath(mTestfiles.get(position).getPath(), 1024);
+    	Bitmap bitmap = Utils.createBitmapByFilePath(mShowingfiles.get(position).getPath(), 1024);
     	BaseImageView view = new BaseImageView(collection.getContext());
     	view.setTapUpListener(mListener);
         view.setImageBitmap(bitmap);
@@ -90,11 +95,11 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
     public String getName(int index) {
-    	int size = mTestfiles.size();
+    	int size = mShowingfiles.size();
     	if (index >= size) {
     		return "";
     	}
-    	String path = mTestfiles.get(index).getPath();
+    	String path = mShowingfiles.get(index).getPath();
     	int start = path.lastIndexOf('/');
     	return path.substring(start + 1) + "  " + (index + 1) + "/" + getCount(); 
     }
