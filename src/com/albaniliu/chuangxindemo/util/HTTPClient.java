@@ -1,25 +1,36 @@
 package com.albaniliu.chuangxindemo.util;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.zip.GZIPInputStream;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -32,6 +43,7 @@ public class HTTPClient {
 	private static String TAG = "HTTPClient";
 	
 	public static String URL_INDEX;
+	public static HttpGet URL_REQUEST;
 	public static String HOST;
 	public static String COVER_INDEX_PREFIX;
 	
@@ -39,6 +51,7 @@ public class HTTPClient {
 	
 	static {
 		URL_INDEX = "http://184.105.176.95/app/DemoCenter/Api/albumlist.vdi";
+		URL_REQUEST = new HttpGet(URL_INDEX);
 		HOST = "http://184.105.176.95/";
 		COVER_INDEX_PREFIX = "http://184.105.176.95";
 	}
@@ -130,5 +143,67 @@ public class HTTPClient {
         HttpEntity entity = response.getEntity();
         BufferedHttpEntity bufHttpEntity = new BufferedHttpEntity(entity);
         return bufHttpEntity.getContent();
+    }
+	
+	private static BasicHttpParams mHttpParams;
+	private static DefaultHttpClient mHttpClient;
+	protected static String doConnect(HttpUriRequest jsonUri) {
+	    mHttpParams = new BasicHttpParams();
+        HttpProtocolParams.setVersion(mHttpParams, HttpVersion.HTTP_1_1);
+        HttpProtocolParams.setContentCharset(mHttpParams, "UTF-8");
+        HttpConnectionParams.setConnectionTimeout(mHttpParams, 10000);
+        HttpConnectionParams.setSoTimeout(mHttpParams, 10000);
+        // 加入代理
+        mHttpClient = new DefaultHttpClient(mHttpParams);
+        // 重试一次
+        mHttpClient.setHttpRequestRetryHandler(
+                new DefaultHttpRequestRetryHandler(2, true));
+        HttpResponse httpResponse = null;
+        try {
+            httpResponse = mHttpClient.execute(jsonUri);
+            return getContent(httpResponse);
+        } catch (ClientProtocolException e) {
+            Log.e(TAG, "", e);
+        } catch (IOException e) {
+            Log.e(TAG, "", e);
+        }
+        return null;
+	}
+	
+	public static String getContent(HttpResponse response) throws IOException {
+        if (response == null)
+            return null;
+        boolean isGzip = false;
+        Header[] headers = response.getHeaders("Content-Encoding");
+        if (headers != null && headers.length > 0) {
+            final int size = headers.length;
+            for (int i = 0; i < size; ++i) {
+                final Header header = headers[i];
+                if (header.getValue().toLowerCase().indexOf("gzip") > -1) {
+                    isGzip = true;
+                    break;
+                }
+            }
+
+            if (isGzip) {
+                final InputStream is = response.getEntity().getContent();
+                GZIPInputStream gis = new GZIPInputStream(is);
+                BufferedReader br = new BufferedReader(new InputStreamReader(
+                        gis));
+                StringBuffer sb = new StringBuffer();
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                }
+                gis.close();
+                return sb.toString();
+            }
+        }
+        String ret = null;
+        try {
+            ret = EntityUtils.toString(response.getEntity());
+        } catch (OutOfMemoryError e) {
+        }
+        return ret;
     }
 }
