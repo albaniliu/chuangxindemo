@@ -113,7 +113,7 @@ public class MainActivity extends Activity {
 //		setContentView(v);
 		initFields();
 //		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		mHandler.sendEmptyMessageDelayed(MSG_START_ACTIVITY, 2000);
+		mHandler.sendEmptyMessageDelayed(MSG_START_ACTIVITY, 20000);
 		this.startService(new Intent(this , Downloader.class));
 	}
 	

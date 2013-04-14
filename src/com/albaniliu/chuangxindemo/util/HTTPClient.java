@@ -10,6 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -88,6 +89,7 @@ public class HTTPClient {
 			URLConnection urlConn_sourceRecommend = getJSONHttpConnection(url);
 			urlConn_sourceRecommend.connect();
 			inputStream = urlConn_sourceRecommend.getInputStream();
+		
 		ByteArrayOutputStream bao = new ByteArrayOutputStream();
 		byte[] temp = new byte[1024];
 		int count = 0;
@@ -121,7 +123,7 @@ public class HTTPClient {
         return true;
     }
 
-	protected InputStream getStreamFromNetwork(URI imageUri) throws IOException {
+	protected static InputStream getStreamFromNetwork(URI imageUri) throws IOException {
         HttpClient httpClient = new DefaultHttpClient();
         HttpGet httpRequest = new HttpGet(imageUri.toString());
         HttpResponse response = httpClient.execute(httpRequest);

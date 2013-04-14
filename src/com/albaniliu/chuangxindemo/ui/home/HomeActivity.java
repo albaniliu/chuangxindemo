@@ -38,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.albaniliu.chuangxindemo.R;
+import com.albaniliu.chuangxindemo.data.FInode;
 import com.albaniliu.chuangxindemo.util.BundleKeyWord;
 import com.albaniliu.chuangxindemo.util.Downloader;
 import com.albaniliu.chuangxindemo.util.HTTPClient;
@@ -66,6 +67,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     private LinearLayout classfiView;
     private ProgressDialog  dialog;
     private JSONArray allDir;
+    private FInode currentInode;
     private int totalIndex;
     private Downloader downloader;
     
@@ -83,6 +85,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 	    public void handleMessage(Message msg) {
 		    super.handleMessage(msg);
 		    if (msg.what == MSG_DOWNLOAD_FINISHED) {
+		    	currentInode = downloader.getRoot();
 		    	setDefaultClassfiView();
 		    	if (dialog.isShowing()) {
 		    		dialog.dismiss();
@@ -108,7 +111,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 				mHandler.sendEmptyMessage(MSG_DOWNLOAD_FAILED);
 			}
 			//处理接收到的内容
- 
+
 		}
 	}
     
@@ -117,12 +120,14 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         public void onServiceConnected(ComponentName name, IBinder service) {  
             // TODO Auto-generated method stub
         	downloader = ((Downloader.MyBinder)service).getService();
+        	downloader.refresh();
         	Log.v(TAG, Boolean.toString(downloader.isFinished()));
         	if (downloader.isFinished()) {
 	        	allDir = downloader.getAllDir();
+	        	currentInode = downloader.getRoot();
 	        	mHandler.sendEmptyMessageDelayed(MSG_DOWNLOAD_FINISHED, 200);
         	}
-        }  
+        }
           
         public void onServiceDisconnected(ComponentName name) {  
             // TODO Auto-generated method stub  
@@ -146,6 +151,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         }
         dialog.show();
         allDir = new JSONArray();
+        currentInode = new FInode();
         this.startService(new Intent(this , Downloader.class));
         Intent i  = new Intent();
         i.setClass(HomeActivity.this, Downloader.class);
@@ -177,9 +183,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         totalIndex = 0;
         int line = 0;
         Log.v(TAG, Boolean.toString(downloader.isFinished()));
-        if (downloader.isFinished()) {
-        	allDir = downloader.getAllDir();
-    	}
+        allDir = currentInode.getDirs();
         while (totalIndex < allDir.length()) {
             setDefaultClassfiLine(line++);
         }
@@ -203,21 +207,30 @@ public class HomeActivity extends Activity implements View.OnClickListener {
             LinearLayout classfiImage = (LinearLayout) getLayoutInflater().inflate(
                     R.layout.classfi_image, null);
             FrameLayout frame = (FrameLayout) classfiImage.findViewById(R.id.left);
-            frame.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(BundleKeyWord.KEY_TYPE, line * 2 + 1);
-                    Intent it = new Intent(HomeActivity.this, ImageGridActivity.class);
-                    startActivity(it);
-                }
-                
-            });
+            MyOnClickListener listener = new MyOnClickListener();
+            listener.setIndex(totalIndex);
+            frame.setOnClickListener(listener);
+//            frame.setOnClickListener(new OnClickListener() {
+//
+//                @Override
+//                public void onClick(View v) {
+//                	if (currentInode.isLeaf()) {
+//	                    Bundle bundle = new Bundle();
+//	                    bundle.putInt(BundleKeyWord.KEY_TYPE, line * 2 + 1);
+//	                    Intent it = new Intent(HomeActivity.this, ImageGridActivity.class);
+//	                    startActivity(it);
+//                	} else {
+//                		currentInode = currentInode.getChildren().get(totalIndex);
+//                		setDefaultClassfiView();
+//                	}
+//                }
+//                
+//            });
             try {
             	JSONObject obj = (JSONObject) allDir.get(totalIndex);
 	            ImageView image = (ImageView) classfiImage.findViewById(R.id.image_left);
 	            String coverPath = obj.getString("cover");
+	            Log.v(TAG, coverPath);
                 String coverName = coverPath.substring(coverPath.lastIndexOf('/') + 1);
 	            String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
 	                    + coverName;
@@ -235,8 +248,6 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
         classfiView.addView(classfiLine);
     }
-
-
     
     public void onMenuClick(View view) {
         if (mPopupVisible) {
@@ -319,5 +330,40 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                 break;
         }
         
+    }
+    
+    class MyOnClickListener implements OnClickListener {
+
+    	private int index;
+		public int getIndex() {
+			return index;
+		}
+		public void setIndex(int index) {
+			this.index = index;
+		}
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			currentInode = currentInode.getChildren().get(index);
+			if (currentInode.isLeaf()) {
+                Bundle bundle = new Bundle();
+                FInode parent = currentInode.getParent();
+                StringBuilder value = new StringBuilder();
+                if (!currentInode.isRoot())
+                	value.append(currentInode.getIndex());
+                while (!parent.isRoot()) {
+                	value.append(",");
+                	value.append(parent.getIndex());
+                	parent = parent.getParent();
+                }
+                Log.v(TAG, "inode_path: " + value.toString());
+                bundle.putString("inode_path", value.toString());
+                Intent it = new Intent(HomeActivity.this, ImageGridActivity.class);
+                startActivity(it);
+        	} else {
+        		setDefaultClassfiView();
+        	}
+		}
+    	
     }
 }

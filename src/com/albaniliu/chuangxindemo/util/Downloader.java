@@ -15,6 +15,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 public class Downloader extends Service {
+
 	private String TAG = "Downloader";
 	private MyBinder mBinder = new MyBinder();
 	private static Thread downloadThread;
@@ -45,6 +46,13 @@ public class Downloader extends Service {
 	        downloadThread = new DownloadThread();
 	        downloadThread.start();
         }
+	}
+	
+	public void refresh() {
+		if (downloadThread == null || !downloadThread.isAlive()) {
+			downloadThread = new DownloadThread();
+	        downloadThread.start();
+		}
 	}
 	
 	public boolean isFinished() {
@@ -93,7 +101,7 @@ public class Downloader extends Service {
         
         void download(FInode parent, JSONArray json) throws Exception {
         	int index = 0;
-        	for (int i = 0; i < json.length() && !Thread.currentThread().isInterrupted(); i++) {
+        	for (int i = 0; i < 1 && i < json.length() && !Thread.currentThread().isInterrupted(); i++) {
                 JSONObject obj = (JSONObject) json.get(i);
                 if (obj.has("url")) {
                 	FInode inode = new FInode(parent);
