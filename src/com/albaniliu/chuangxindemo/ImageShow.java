@@ -40,9 +40,10 @@ public class ImageShow extends Activity {
     private LinearLayout mFlowBar;
     private TextView mFooter;
     private LargePicGallery mPager;
-    private String mPathDiscript = "3,3";
+    private String mInodeDes = "3,3";
     private int mCurrentIndex = 0;
     private SlideShow mSlideshow;
+    private boolean mSlideShowMode = false;
     private RandomDataSource mRandomDataSource;
 
     public static class ShowingNode {
@@ -75,10 +76,14 @@ public class ImageShow extends Activity {
             switch (msg.what) {
                 case GET_NODE_DONE:
                     ArrayList<ShowingNode> nodes = parseFilesPath(mCurrentInode);
-                    mAdapter = new ViewPagerAdapter(nodes, mListener);
-                    mPager.setAdapter(mAdapter);
-                    mFooter.setText(mAdapter.getName(mCurrentIndex));
-                    mRandomDataSource = new RandomDataSource(nodes);
+                    mRandomDataSource = new RandomDataSource(nodes, mCurrentIndex);
+                    if (mSlideShowMode) {
+                        mSlideshow.setDataSource(mRandomDataSource);
+                    } else {
+                        mAdapter = new ViewPagerAdapter(nodes, mListener);
+                        mPager.setAdapter(mAdapter);
+                        mFooter.setText(mAdapter.getName(mCurrentIndex));
+                    }
                     break;
 
                 default:
@@ -94,7 +99,7 @@ public class ImageShow extends Activity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             mDownloadService = ((Downloader.MyBinder) service).getService();
             Log.v(TAG, Boolean.toString(mDownloadService.isFinished()));
-            mCurrentInode = mDownloadService.getLeaf(mPathDiscript);
+            mCurrentInode = mDownloadService.getLeaf(mInodeDes);
             mHanler.sendEmptyMessage(GET_NODE_DONE);
         }
 
@@ -152,12 +157,23 @@ public class ImageShow extends Activity {
         setContentView(R.layout.largepic);
 
         mSlideshow = (SlideShow) findViewById(R.id.slideshow);
-        mSlideshow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSlideshow.setVisibility(View.GONE);
-            }
-        });
+        mSlideShowMode = getIntent().getBooleanExtra("slideshow", false);
+        if (mSlideShowMode) {
+            mSlideshow.setVisibility(View.VISIBLE);
+            mSlideshow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+        } else {
+            mSlideshow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mSlideshow.setVisibility(View.GONE);
+                }
+            });
+        }
 
         mPager = (LargePicGallery) findViewById(R.id.photo_flow);
         mPager.setOffscreenPageLimit(1);
@@ -175,8 +191,13 @@ public class ImageShow extends Activity {
         Intent i = new Intent();
         i.setClass(this, Downloader.class);
         this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
-
-        mCurrentIndex  = getIntent().getIntExtra("index", 0);
+        if (!mSlideShowMode) {
+            mCurrentIndex  = getIntent().getIntExtra("index", 0);
+            mInodeDes = getIntent().getStringExtra("inode");
+        } else {
+            mCurrentIndex = 0;
+        }
+        
         mHanler.postDelayed(mToggleRunnable, 5000);
     }
     

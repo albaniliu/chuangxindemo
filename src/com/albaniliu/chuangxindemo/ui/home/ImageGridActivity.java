@@ -121,6 +121,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         Intent i  = new Intent();
         i.setClass(ImageGridActivity.this, Downloader.class);
         this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
+        
     }
 
     public void onMenuClick(View view) {
@@ -222,7 +223,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         classfiLine.setPadding(padding, 1, padding, 1);
         for (int i = 0; i < num && totalIndex < allImages.length(); totalIndex++) {
             LinearLayout classfiImage = (LinearLayout) getLayoutInflater().inflate(
-                    R.layout.classfi_image, null);
+                    R.layout.grid_classfi_image, null);
             FrameLayout frame = (FrameLayout) classfiImage.findViewById(R.id.left);
             LinearLayout des = (LinearLayout) classfiImage.findViewById(R.id.des_layout);
             des.setVisibility(View.GONE);
@@ -281,11 +282,9 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
 	            });
 	            i++;
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-            
-            
+
         }
 
         classfiView.addView(classfiLine);
@@ -312,9 +311,17 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         hidePopup();
         switch (id) {
             case R.id.menu_refresh:
-            	downloader.refreshForce();
+                if (downloader != null) {
+                    downloader.refreshForce();
+                    dialog.show();
+                }
                 break;
             case R.id.menu_more:
+                Intent intent = new Intent();
+                intent.putExtra("sildeshow", true);
+                intent.putExtra("inode", inodePath);
+                intent.setClass(getApplicationContext(), ImageShow.class);
+                startActivity(intent); 
                 break;
             case R.id.whole:
                 break;
