@@ -22,14 +22,14 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Xfermode;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -38,6 +38,12 @@ import com.albaniliu.chuangxindemo.data.Vector3f;
 public class Slideshow extends SurfaceView implements SurfaceHolder.Callback {
     public Slideshow(Context context) {
         super(context);
+        SurfaceHolder holder = getHolder();
+        holder.addCallback(this);
+    }
+    
+    public Slideshow(Context context, AttributeSet attr) {
+        super(context, attr);
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
     }
