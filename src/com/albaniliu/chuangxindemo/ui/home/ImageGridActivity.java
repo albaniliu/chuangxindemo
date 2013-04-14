@@ -293,7 +293,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
                 break;
             case R.id.menu_more:
                 Intent intent = new Intent();
-                intent.putExtra("sildeshow", true);
+                intent.putExtra("slideshow", true);
                 intent.putExtra("inode", inodePath);
                 intent.setClass(getApplicationContext(), ImageShow.class);
                 startActivity(intent); 
