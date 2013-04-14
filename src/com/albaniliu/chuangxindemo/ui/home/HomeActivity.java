@@ -369,8 +369,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
                 if (!currentInode.isRoot())
                 	value.append(currentInode.getIndex());
                 while (!parent.isRoot()) {
-                	value.append(",");
-                	value.append(parent.getIndex());
+                	value.insert(0, ",");
+                	value.insert(0, parent.getIndex());
                 	parent = parent.getParent();
                 }
                 Log.v(TAG, "inode_path: " + value.toString());
