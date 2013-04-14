@@ -40,7 +40,7 @@ public class ImageShow extends Activity {
     private LinearLayout mFlowBar;
     private TextView mFooter;
     private LargePicGallery mPager;
-    private String mInodeDes = "3,3";
+    private String mInodePath = "3,3";
     private int mCurrentIndex = 0;
     private SlideShow mSlideshow;
     private boolean mSlideShowMode = false;
@@ -83,6 +83,7 @@ public class ImageShow extends Activity {
                         mAdapter = new ViewPagerAdapter(nodes, mListener);
                         mPager.setAdapter(mAdapter);
                         mFooter.setText(mAdapter.getName(mCurrentIndex));
+                        mPager.setCurrentItem(mCurrentIndex);
                     }
                     break;
 
@@ -99,7 +100,7 @@ public class ImageShow extends Activity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             mDownloadService = ((Downloader.MyBinder) service).getService();
             Log.v(TAG, Boolean.toString(mDownloadService.isFinished()));
-            mCurrentInode = mDownloadService.getLeaf(mInodeDes);
+            mCurrentInode = mDownloadService.getLeaf(mInodePath);
             mHanler.sendEmptyMessage(GET_NODE_DONE);
         }
 
@@ -191,7 +192,7 @@ public class ImageShow extends Activity {
         Intent i = new Intent();
         i.setClass(this, Downloader.class);
         this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);
-        mInodeDes = getIntent().getStringExtra("inode");
+        mInodePath = getIntent().getStringExtra("inode_path");
         if (!mSlideShowMode) {
             mCurrentIndex  = getIntent().getIntExtra("index", 0);
         } else {
@@ -201,12 +202,6 @@ public class ImageShow extends Activity {
         mHanler.postDelayed(mToggleRunnable, 5000);
     }
     
-    @Override
-    public void onResume() {
-        super.onResume();
-        mPager.setCurrentItem(mCurrentIndex);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

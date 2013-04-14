@@ -269,6 +269,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
 	                    if (isImage) {
 		                    Intent intent = new Intent();
 		                    intent.putExtra("index", index);
+		                    intent.putExtra("inode_path", inodePath);
 		                    intent.setClass(getApplicationContext(), ImageShow.class);
 		                    startActivity(intent);
 	                    } else {
@@ -319,7 +320,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
             case R.id.menu_more:
                 Intent intent = new Intent();
                 intent.putExtra("slideshow", true);
-                intent.putExtra("inode", inodePath);
+                intent.putExtra("inode_path", inodePath);
                 intent.setClass(getApplicationContext(), ImageShow.class);
                 startActivity(intent); 
                 break;
