@@ -298,13 +298,15 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        hidePopup();
         switch(v.getId()) {
             case R.id.menu_refresh:
+                downloader.refreshForce();
+                dialog.show();
                 break;
             case R.id.menu_more:
                 break;
             case R.id.whole:
-                hidePopup();
                 break;
         }
         
