@@ -119,7 +119,7 @@ public class MainActivity extends Activity {
         initFields();
         // getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         mHandler.sendEmptyMessageDelayed(MSG_START_ACTIVITY, 2000);
-        this.startService(new Intent(this, Downloader.class));
+        
     }
 
     public class MyView extends View {
