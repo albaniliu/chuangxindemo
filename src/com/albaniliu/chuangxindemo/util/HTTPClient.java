@@ -14,6 +14,7 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
@@ -49,11 +50,14 @@ public class HTTPClient {
 	
 	public static String URL_ABOUTPAGE;
 	
+	public static Map<String, String> urlMap;
+	
 	static {
 		URL_INDEX = "http://184.105.176.95/app/DemoCenter/Api/albumlist.vdi";
 		URL_REQUEST = new HttpGet(URL_INDEX);
 		HOST = "http://184.105.176.95/";
 		COVER_INDEX_PREFIX = "http://184.105.176.95";
+		
 	}
 	
 	public static URLConnection getJSONHttpConnection(String strURL)
@@ -99,9 +103,9 @@ public class HTTPClient {
 			throws SocketTimeoutException, MalformedURLException, IOException,
 			JSONException {
 		InputStream inputStream = null;
-			URLConnection urlConn_sourceRecommend = getJSONHttpConnection(url);
-			urlConn_sourceRecommend.connect();
-			inputStream = urlConn_sourceRecommend.getInputStream();
+		URLConnection urlConn_sourceRecommend = getJSONHttpConnection(url);
+		urlConn_sourceRecommend.connect();
+		inputStream = urlConn_sourceRecommend.getInputStream();
 		
 		ByteArrayOutputStream bao = new ByteArrayOutputStream();
 		byte[] temp = new byte[1024];
@@ -110,7 +114,11 @@ public class HTTPClient {
 			bao.write(temp, 0, count);
 		}
 		String result = new String(bao.toByteArray());
+		Log.v(url, result);
 		return new JSONArray(result);
+		
+//		String result = doConnect(new HttpGet(url));
+//		return new JSONArray(result);
 	}
 	
 	public static boolean getStreamFromUrl(String url, String path)
@@ -163,8 +171,10 @@ public class HTTPClient {
             httpResponse = mHttpClient.execute(jsonUri);
             return getContent(httpResponse);
         } catch (ClientProtocolException e) {
+        	Log.v(TAG, jsonUri.toString());
             Log.e(TAG, "", e);
         } catch (IOException e) {
+        	Log.v(TAG, jsonUri.getURI().getPath());
             Log.e(TAG, "", e);
         }
         return null;

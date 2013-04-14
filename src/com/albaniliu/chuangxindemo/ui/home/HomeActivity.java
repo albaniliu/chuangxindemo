@@ -87,6 +87,9 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		    	classfiView.setVisibility(View.VISIBLE);
 		    } else if (msg.what == MSG_DOWNLOAD_FAILED) {
 		        Toast.makeText(getBaseContext(), "下载失败", Toast.LENGTH_LONG).show();
+		        if (dialog.isShowing()) {
+		    		dialog.dismiss();
+		    	}
 		    }
 	    }
     };

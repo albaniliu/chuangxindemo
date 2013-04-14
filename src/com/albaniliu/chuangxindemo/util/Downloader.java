@@ -90,7 +90,8 @@ public class Downloader extends Service {
         	int process = 0;
             try {
             	FInode tmpRoot = new FInode();
-                allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX + "?timestamp=" + System.currentTimeMillis());
+//                allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX + "?timestamp=" + System.currentTimeMillis());
+                allDir = HTTPClient.getJSONArrayFromUrl(HTTPClient.URL_INDEX);
                 tmpRoot.setDirs(allDir);
                 download(tmpRoot, allDir);
                 root = tmpRoot;
@@ -114,7 +115,8 @@ public class Downloader extends Service {
                 	FInode inode = new FInode(parent);
 	                String url = HTTPClient.HOST + obj.getString("url");
 	                Log.v(TAG, "url: " + url);
-	                JSONArray jArray = HTTPClient.getJSONArrayFromUrl(url + "?timestamp=" + System.currentTimeMillis());
+//	                JSONArray jArray = HTTPClient.getJSONArrayFromUrl(url + "?timestamp=" + System.currentTimeMillis());
+	                JSONArray jArray = HTTPClient.getJSONArrayFromUrl(url);
 	                inode.setDirs(jArray);
 	                download(inode, jArray);
 	                inode.setIndex(index);
