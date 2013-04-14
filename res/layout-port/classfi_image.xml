@@ -12,9 +12,9 @@
         android:id="@+id/left"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="11px"
-        android:layout_marginLeft="20px"
-        android:layout_marginRight="20px"
+        android:layout_marginBottom="12px"
+        android:layout_marginLeft="16px"
+        android:layout_marginRight="16px"
         android:layout_marginTop="12px"
         android:layout_weight="1" >
 
@@ -28,8 +28,8 @@
 
         <LinearLayout
             android:id="@+id/des_layout"
-            android:layout_width="150dp"
-            android:layout_height="30dp"
+            android:layout_width="344px"
+            android:layout_height="30px"
             android:layout_gravity="bottom"
             android:background="#77000000"
             android:gravity="center" >

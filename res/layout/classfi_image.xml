@@ -12,10 +12,10 @@
         android:id="@+id/left"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="13px"
-        android:layout_marginLeft="12px"
+        android:layout_marginBottom="12px"
+        android:layout_marginLeft="13px"
         android:layout_marginRight="13px"
-        android:layout_marginTop="13px"
+        android:layout_marginTop="12px"
         android:layout_weight="1" >
 
         <ImageView
@@ -29,7 +29,7 @@
         <LinearLayout
             android:id="@+id/des_layout"
             android:layout_width="288px"
-            android:layout_height="30dp"
+            android:layout_height="30px"
             android:layout_gravity="bottom"
             android:gravity="center"
             android:background="#77000000" >

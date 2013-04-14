@@ -163,8 +163,12 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         int screenHeight = getWindow().getWindowManager().getDefaultDisplay()
                 .getHeight();
         int num = 2;
-        if (screenWidth > screenHeight)
-            num = 4;
+        int padding = 24;
+        if (screenWidth > screenHeight) {
+        	num = 4;
+        	padding = 12;
+        }
+        classfiLine.setPadding(padding, 1, padding, 1);
         for (int i = 0; i < num; i++) {
             LinearLayout classfiImage = (LinearLayout) getLayoutInflater().inflate(
                     R.layout.classfi_image, null);

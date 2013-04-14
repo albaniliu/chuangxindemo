@@ -193,13 +193,16 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         int screenHeight = getWindow().getWindowManager().getDefaultDisplay()
                 .getHeight();
         int num = 2;
-        if (screenWidth > screenHeight)
-            num = 4;
+        int padding = 24;
+        if (screenWidth > screenHeight) {
+        	num = 4;
+        	padding = 12;
+        }
+        classfiLine.setPadding(padding, 1, padding, 0);
         for (int i = 0; i < num && totalIndex < allDir.length(); i++, totalIndex++) {
             LinearLayout classfiImage = (LinearLayout) getLayoutInflater().inflate(
                     R.layout.classfi_image, null);
             FrameLayout frame = (FrameLayout) classfiImage.findViewById(R.id.left);
-            frame.setPadding(5, 1, 5, 1);
             frame.setOnClickListener(new OnClickListener() {
 
                 @Override
