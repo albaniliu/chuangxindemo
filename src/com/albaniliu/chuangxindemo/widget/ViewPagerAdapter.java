@@ -18,7 +18,7 @@ import com.albaniliu.chuangxindemo.widget.LargePicGallery.SingleTapListner;
 public class ViewPagerAdapter extends PagerAdapter {
 	private static final int BUFF_MAX = 3;
 
-	private ArrayList<ShowingNode> mShowingfiles = new ArrayList<ShowingNode>();
+	private ArrayList<ShowingNode> mShowingNodes = new ArrayList<ShowingNode>();
 	private SingleTapListner mListener;
 
     public ViewPagerAdapter(File folder, SingleTapListner listener) {
@@ -32,14 +32,14 @@ public class ViewPagerAdapter extends PagerAdapter {
                 }
             });
     		for (File file : files) {
-    			mShowingfiles.add(new ShowingNode(file.getPath(), "", ""));
+    			mShowingNodes.add(new ShowingNode(file.getPath(), "", ""));
     		}
     	}
     }
     
     public ViewPagerAdapter(ArrayList<ShowingNode> nodes, SingleTapListner listener) {
         mListener = listener;
-        mShowingfiles = nodes;
+        mShowingNodes = nodes;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return mShowingfiles.size();
+        return mShowingNodes.size();
     }
 
     public int getViewIndex(int postion) {
@@ -85,7 +85,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         }
         return mBuffImage[viewIndex];
         */
-    	Bitmap bitmap = Utils.createBitmapByFilePath(mShowingfiles.get(position).getPath(), 1024);
+    	Bitmap bitmap = Utils.createBitmapByFilePath(mShowingNodes.get(position).getPath(), 1024);
     	BaseImageView view = new BaseImageView(collection.getContext());
     	view.setTapUpListener(mListener);
         view.setImageBitmap(bitmap);
@@ -95,13 +95,11 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
     public String getName(int index) {
-    	int size = mShowingfiles.size();
+    	int size = mShowingNodes.size();
     	if (index >= size) {
     		return "";
     	}
-    	String path = mShowingfiles.get(index).getPath();
-    	int start = path.lastIndexOf('/');
-    	return path.substring(start + 1) + "  " + (index + 1) + "/" + getCount(); 
+    	return mShowingNodes.get(index).getContent() + "  " + (index + 1) + "/" + getCount(); 
     }
 
     @Override

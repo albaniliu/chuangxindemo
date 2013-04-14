@@ -205,8 +205,8 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
                 .getWidth();
         int screenHeight = getWindow().getWindowManager().getDefaultDisplay()
                 .getHeight();
-        int num = 2;
-        int padding = 24;
+        int num = 3;
+        int padding = 10;
         if (screenWidth > screenHeight) {
         	num = 4;
         	padding = 12;
