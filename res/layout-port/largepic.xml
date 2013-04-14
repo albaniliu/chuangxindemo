@@ -30,7 +30,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="196px"
+            android:layout_marginLeft="20px"
             android:src="@drawable/lenovo_logo" />
 
         <View
@@ -39,12 +39,12 @@
             android:layout_weight="1.0" />
 
         <Button
-            android:layout_width="64px"
+            android:layout_width="84px"
             android:layout_height="64px"
             android:layout_marginRight="40px"
             android:onClick="onSlideClick"
             android:text="@string/btn_text_slideshow"
-            android:textSize="10sp" />
+            android:textSize="10px" />
     </LinearLayout>
 
     <TextView
