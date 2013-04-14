@@ -55,6 +55,21 @@ public class Downloader extends Service {
 		return allDir;
 	}
 	
+	public FInode getLeaf(String path) {
+		String []paths = path.split(",");
+		FInode res = new FInode();
+		FInode tmp = root;
+		for (int i = 0; i < paths.length; i++) {
+			int index = Integer.parseInt(paths[i]);
+			if (index >= tmp.getChildren().size())
+				break;
+			tmp = tmp.getChildren().get(index);
+		}
+		if (tmp.isLeaf())
+			res = tmp;
+		return res;
+	}
+	
 	class DownloadThread extends Thread {
         public void run() {
         	int process = 0;
@@ -77,6 +92,7 @@ public class Downloader extends Service {
         }
         
         void download(FInode parent, JSONArray json) throws Exception {
+        	int index = 0;
         	for (int i = 0; i < json.length() && !Thread.currentThread().isInterrupted(); i++) {
                 JSONObject obj = (JSONObject) json.get(i);
                 if (obj.has("url")) {
@@ -86,7 +102,9 @@ public class Downloader extends Service {
 	                JSONArray jArray = HTTPClient.getJSONArrayFromUrl(url + "?timestamp=" + System.currentTimeMillis());
 	                inode.setDirs(jArray);
 	                download(inode, jArray);
+	                inode.setIndex(index);
 	                parent.addChild(inode);
+	                index++;
 	                
 	                String cover = HTTPClient.COVER_INDEX_PREFIX + obj.getString("cover");
 	                Log.v(TAG, obj.getString("cover"));

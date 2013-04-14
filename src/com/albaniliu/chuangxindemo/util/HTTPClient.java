@@ -25,7 +25,7 @@ import org.json.JSONException;
 import android.util.Log;
 
 public class HTTPClient {
-	public static int CONNECT_TIME_OUT = 5000;
+	public static int CONNECT_TIME_OUT = 50000;
 	public static int READ_TIME_OUT = 30000;
 	private HttpURLConnection mHttpConnection = null;
 	private static String TAG = "HTTPClient";

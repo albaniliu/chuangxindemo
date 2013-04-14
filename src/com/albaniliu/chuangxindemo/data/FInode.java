@@ -9,17 +9,28 @@ public class FInode {
 	private FInode parent;
 	private JSONArray dirs;
 	private List<FInode> children;
+	private int index;
 	
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
 	public FInode() {
 		parent = null;
 		children = new ArrayList<FInode>();
 		dirs = new JSONArray();
+		index = 0;
 	}
 	
 	public FInode(FInode parent) {
 		this.parent = parent;
 		children = new ArrayList<FInode>();
 		dirs = new JSONArray();
+		index = 0;
 	}
 	
 	public boolean isRoot() {
