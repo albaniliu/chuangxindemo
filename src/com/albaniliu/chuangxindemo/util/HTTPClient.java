@@ -55,7 +55,7 @@ public class HTTPClient {
 	static {
 		URL_INDEX = "http://184.105.176.95/app/DemoCenter/Api/albumlist.vdi";
 		URL_REQUEST = new HttpGet(URL_INDEX);
-		HOST = "http://184.105.176.95/";
+		HOST = "http://184.105.176.95";
 		COVER_INDEX_PREFIX = "http://184.105.176.95";
 		
 	}
@@ -105,10 +105,11 @@ public class HTTPClient {
 		String result = "";
 		InputStream inputStream = null;
 		ByteArrayOutputStream bao = null;
+		HttpURLConnection urlConn_sourceRecommend = null;
 		int retry  = 3;
 		while (retry-- > 0) {
 			try {
-				URLConnection urlConn_sourceRecommend = getJSONHttpConnection(url);
+				urlConn_sourceRecommend = (HttpURLConnection)getJSONHttpConnection(url);
 				urlConn_sourceRecommend.connect();
 				inputStream = urlConn_sourceRecommend.getInputStream();
 				bao = new ByteArrayOutputStream();
@@ -128,6 +129,7 @@ public class HTTPClient {
 				if (bao != null) {
 					bao.close();
 				}
+				urlConn_sourceRecommend.disconnect();
 			}
 		}
 		return new JSONArray(result);
