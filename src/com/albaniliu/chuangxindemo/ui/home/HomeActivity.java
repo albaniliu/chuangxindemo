@@ -20,6 +20,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -35,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.albaniliu.chuangxindemo.ImageShow;
+import com.albaniliu.chuangxindemo.MainActivity;
 import com.albaniliu.chuangxindemo.R;
 import com.albaniliu.chuangxindemo.data.FInode;
 import com.albaniliu.chuangxindemo.util.Downloader;
@@ -64,7 +67,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     private LayoutParams bottomParams;
 
     private LinearLayout classfiView;
-    private ProgressDialog  dialog;
+    private MyProgressDialog  dialog;
     private JSONArray allDir;
     private FInode currentInode;
     private int totalIndex;
@@ -147,7 +150,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         classfiView = (LinearLayout) this.findViewById(R.id.classfi_view);
         classfiView.setVisibility(View.GONE);
         if (dialog == null) {
-            dialog = new ProgressDialog(HomeActivity.this);
+            dialog = new MyProgressDialog(HomeActivity.this);
+            dialog.setCancelable(false);
             dialog.setTitle(R.string.dialog_title);
             dialog.setMessage("请稍等..");
         }
@@ -349,6 +353,24 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         
     }
     
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+    	Log.v(TAG, "onKeyDown");
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) { //按下的如果是BACK，同时没有重复
+           if (currentInode.isRoot()) {
+        	   Intent it = new Intent(HomeActivity.this, MainActivity.class);
+               startActivity(it);
+               finish();
+           } else {
+        	   currentInode = currentInode.getParent();
+        	   setDefaultClassfiView();
+           }
+           return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+    
     class MyOnClickListener implements OnClickListener {
     	private int index;
 
@@ -383,5 +405,21 @@ public class HomeActivity extends Activity implements View.OnClickListener {
         		setDefaultClassfiView();
         	}
 		}
+    }
+    
+    class MyProgressDialog extends ProgressDialog {
+
+		@Override
+		public void onBackPressed() {
+			// TODO Auto-generated method stub
+			setCancelable(true);
+			super.onBackPressed();
+		}
+
+		public MyProgressDialog(Context context) {
+			super(context);
+			// TODO Auto-generated constructor stub
+		}
+    	
     }
 }

@@ -28,7 +28,7 @@
         <activity
             android:name="com.albaniliu.chuangxindemo.ui.home.HomeActivity"
             android:theme="@android:style/Theme.NoTitleBar"
-            android:screenOrientation="sensor"
+            android:screenOrientation="landscape"
             android:configChanges="orientation|keyboardHidden" >
             
             
@@ -36,19 +36,21 @@
         <activity
             android:name="com.albaniliu.chuangxindemo.ui.home.ImageGridActivity"
             android:theme="@android:style/Theme.NoTitleBar"
-            android:screenOrientation="sensor"
+            android:screenOrientation="landscape"
             android:configChanges="orientation|keyboardHidden" >
         </activity>
         
         <activity
             android:name="com.albaniliu.chuangxindemo.ImageShow"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="landscape" >
             
         </activity>
         
         <activity
             android:name="com.albaniliu.chuangxindemo.SlideShowActivity"
             android:label="@string/app_name"
+            android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
         
         <service android:name="com.albaniliu.chuangxindemo.util.Downloader" android:exported="true"></service> 

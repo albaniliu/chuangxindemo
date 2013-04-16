@@ -4,8 +4,12 @@ package com.albaniliu.chuangxindemo;
 import java.io.File;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,8 +20,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,6 +42,7 @@ import com.albaniliu.chuangxindemo.util.SystemUiHider;
  * @see SystemUiHider
  */
 public class MainActivity extends Activity {
+	private static boolean mFirstEnter = true;
     private boolean mTouch = false;
 
     @Override
@@ -117,8 +124,13 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initFields();
-        // getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        mHandler.sendEmptyMessageDelayed(MSG_START_ACTIVITY, 2000);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if (mFirstEnter) {
+        	mFirstEnter = false;
+        	mHandler.sendEmptyMessageDelayed(MSG_START_ACTIVITY, 2000);
+        } else {
+        	mHandler.sendEmptyMessage(MSG_START_ACTIVITY);
+        }
         
     }
 
@@ -309,5 +321,40 @@ public class MainActivity extends Activity {
             }
         }
 
+    }
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) { //按下的如果是BACK，同时没有重复
+           dialog();
+           return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+    
+    protected void dialog() {
+    	  AlertDialog.Builder builder = new Builder(MainActivity.this);
+    	  builder.setMessage("确认退出吗？");
+
+    	  builder.setTitle("提示");
+
+    	  builder.setPositiveButton(R.string.yes, new OnClickListener() {
+    	    @Override
+    	    public void onClick(DialogInterface dialog, int which) {
+    	      dialog.dismiss();
+
+    	      MainActivity.this.finish();
+    	    }
+    	  });
+
+    	  builder.setNegativeButton(R.string.no, new OnClickListener() {
+
+    	    @Override
+    	    public void onClick(DialogInterface dialog, int which) {
+    	      dialog.dismiss();
+    	    }
+    	  });
+    	  builder.create().show();
     }
 }

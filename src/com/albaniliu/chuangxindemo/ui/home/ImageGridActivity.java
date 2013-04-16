@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.ScaleAnimation;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -112,6 +113,8 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         setDefaultClassfiView();
 
         mPopup = (LinearLayout) findViewById(R.id.menu_pop_up);
+        Button bMore = (Button) findViewById(R.id.menu_refresh);
+        bMore.setVisibility(View.GONE);
         int popupButtonCount = mPopup.getChildCount();
         for (int i = 0; i < popupButtonCount; i++) {
             mPopup.getChildAt(i).setOnClickListener(this);
@@ -226,7 +229,8 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
                     R.layout.grid_classfi_image, null);
             FrameLayout frame = (FrameLayout) classfiImage.findViewById(R.id.left);
             LinearLayout des = (LinearLayout) classfiImage.findViewById(R.id.des_layout);
-            des.setVisibility(View.GONE);
+            if (isImage)
+            	des.setVisibility(View.GONE);
             
             try {
             	JSONObject obj = (JSONObject) allImages.get(totalIndex);
