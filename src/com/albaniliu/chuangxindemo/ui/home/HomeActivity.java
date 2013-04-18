@@ -414,7 +414,8 @@ public class HomeActivity extends Activity implements View.OnClickListener {
 		@Override
 		public void onBackPressed() {
 			// TODO Auto-generated method stub
-			setCancelable(true);
+//			setCancelable(true);
+			dismiss();
 			super.onBackPressed();
 		}
 
