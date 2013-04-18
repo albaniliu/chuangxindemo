@@ -89,7 +89,8 @@ public class MainActivity extends Activity {
             R.drawable.main_bg_800x1205, R.drawable.main_bg_1280x736,
     };
     int mBtnRes[] = {
-            R.drawable.pic_manage_icon, R.drawable.video_manage_icon
+            R.drawable.pic_manage_icon, R.drawable.video_manage_icon,
+            R.drawable.pic_manage_icon_192x192, R.drawable.video_manage_icon_192x192
     };
     int index = 0;
     private Rect mLeftButton = new Rect();
@@ -188,7 +189,12 @@ public class MainActivity extends Activity {
             Rect srcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
             canvas.drawBitmap(bitmap, srcRect, dstRect, paint);
 
-            Bitmap button = BitmapFactory.decodeResource(getResources(), mBtnRes[0]);
+            Bitmap button;
+            if (height > width) {
+            	button = BitmapFactory.decodeResource(getResources(), mBtnRes[2]);
+            } else {
+            	button = BitmapFactory.decodeResource(getResources(), mBtnRes[0]);
+            }
             srcRect = new Rect(0, 0, button.getWidth(), button.getHeight());
 
             int buttonSize = height > width ? 192 : 256;
@@ -201,7 +207,11 @@ public class MainActivity extends Activity {
 
             canvas.drawBitmap(button, srcRect, mLeftButton, paint);
 
-            button = BitmapFactory.decodeResource(getResources(), mBtnRes[1]);
+            if (height > width) {
+            	button = BitmapFactory.decodeResource(getResources(), mBtnRes[3]);
+            } else {
+            	button = BitmapFactory.decodeResource(getResources(), mBtnRes[1]);
+            }
             canvas.drawBitmap(button, srcRect, mRightButton, paint);
 
             index = ++index % mResources.length;

@@ -22,6 +22,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.ScaleAnimation;
@@ -103,6 +104,7 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
     public void onCreate(Bundle savedInstanceState) {
         Log.i("HomeActivity", "onCreate");
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         Bundle extras = getIntent().getExtras();
         inodePath = extras.getString("inode_path");
         isImage = extras.getBoolean("image");
@@ -115,12 +117,15 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
         mPopup = (LinearLayout) findViewById(R.id.menu_pop_up);
         Button bMore = (Button) findViewById(R.id.menu_refresh);
         bMore.setVisibility(View.GONE);
+        
         int popupButtonCount = mPopup.getChildCount();
         for (int i = 0; i < popupButtonCount; i++) {
             mPopup.getChildAt(i).setOnClickListener(this);
         }
         mMenuBtn = (ImageButton) findViewById(R.id.menu_btn);
-
+        if (!isImage) {
+        	mMenuBtn.setVisibility(View.GONE);
+        }
         Intent i  = new Intent();
         i.setClass(ImageGridActivity.this, Downloader.class);
         this.bindService(i, mServiceConnection, BIND_AUTO_CREATE);

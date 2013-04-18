@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
@@ -144,6 +145,7 @@ public class HomeActivity extends Activity implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         Log.i("HomeActivity", "onCreate");
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         isImage = getIntent().getBooleanExtra("image", true);
         this.setContentView(R.layout.home_activity);
         ResourceUtils.setContext(this);
