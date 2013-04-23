@@ -135,11 +135,10 @@ public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
                         float alpha = ((float) (mTimeElapsed - SLIDESHOW_DURATION)) / 2000.0f;
                         paint.setColorFilter(null);
                         if (alpha < 1.0f) {
-                            // int val = (int)(255 * (1.0f - alpha));
-                            // int srcColor = Color.argb(val, 0, 0, 0);
-                            // PorterDuffColorFilter colorFilter = new
-                            // PorterDuffColorFilter(srcColor, Mode.SRC_IN);
-                            // paint.setColorFilter(null);
+                             int val = (int)(255 * (1.0f - alpha));
+                             int srcColor = Color.argb(val, 0, 0, 0);
+                             PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(srcColor, Mode.SRC_IN);
+                             paint.setColorFilter(null);
                         }
                         c.drawBitmap(mBitmap, mRect, mFrameRect, paint);
                         if (alpha < 1.0f) {
@@ -163,10 +162,10 @@ public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
                             mTimeElapsed = 0;
                         }
                     } else {
-                    	Paint clear = new Paint();
-                    	clear.setXfermode(new PorterDuffXfermode(Mode.CLEAR));
-                    	c.drawPaint(clear);
-                    	
+                        Paint clear = new Paint();
+                        clear.setXfermode(new PorterDuffXfermode(Mode.CLEAR));
+                        c.drawPaint(clear);
+
                         paint.setColorFilter(null);
                         c.drawBitmap(mBitmap, mRect, mFrameRect, paint);
                     }
