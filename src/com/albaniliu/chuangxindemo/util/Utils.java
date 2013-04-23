@@ -209,6 +209,9 @@ public class Utils {
         Bitmap org = null;
         try {
             org = BitmapFactory.decodeFile(path, opts);
+            if (org == null) {
+            	return null;
+            }
             raw = Bitmap.createScaledBitmap(org, w, h, true);
             if (raw != org) {
                 org.recycle();

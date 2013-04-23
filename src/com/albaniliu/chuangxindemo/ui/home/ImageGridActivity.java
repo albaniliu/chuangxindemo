@@ -14,6 +14,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -260,6 +261,9 @@ public class ImageGridActivity extends Activity implements View.OnClickListener 
 	            String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/liangdemo1/"
 	                    + coverName;
 	            Bitmap bitmap = Utils.createBitmapByFilePath(fileName, 200);
+	            if (bitmap == null) {
+	            	bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.grid_item_bg);
+	            }
 	            image.setImageBitmap(bitmap);
 	            
 	            TextView txt = (TextView) classfiImage.findViewById(R.id.des);
