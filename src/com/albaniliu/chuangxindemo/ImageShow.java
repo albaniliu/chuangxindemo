@@ -48,7 +48,7 @@ public class ImageShow extends Activity implements View.OnClickListener {
     private TextView mFooter;
     private LargePicGallery mPager;
     private String mInodePath = "3,3";
-    private int mCurrentIndex = 0;
+    private int mCurIndex = 0;
     private int mSkipCount = 0;
     private SlideShow mSlideshow;
     private boolean mSlideShowMode = false;
@@ -90,15 +90,15 @@ public class ImageShow extends Activity implements View.OnClickListener {
             switch (msg.what) {
                 case GET_NODE_DONE:
                     ArrayList<ShowingNode> nodes = parseFilesPath(mCurrentInode);
-                    mCurrentIndex -= mSkipCount;
-                    mRandomDataSource = new RandomDataSource(nodes, mCurrentIndex);
+                    mCurIndex -= mSkipCount;
+                    mRandomDataSource = new RandomDataSource(nodes, mCurIndex);
                     if (mSlideShowMode) {
                         mSlideshow.setDataSource(mRandomDataSource);
                     } else {
                         mAdapter = new ViewPagerAdapter(nodes, mListener);
                         mPager.setAdapter(mAdapter);
-                        mFooter.setText(mAdapter.getName(mCurrentIndex));
-                        mPager.setCurrentItem(mCurrentIndex);
+                        mFooter.setText(mAdapter.getName(mCurIndex));
+                        mPager.setCurrentItem(mCurIndex);
                     }
                     break;
 
@@ -207,6 +207,7 @@ public class ImageShow extends Activity implements View.OnClickListener {
             @Override
             public void onPageSelected(int position) {
                 mFooter.setText(mAdapter.getName(position));
+                mCurIndex = position;
             }
         });
         mFlowBar = (LinearLayout) findViewById(R.id.flow_bar);
@@ -219,9 +220,9 @@ public class ImageShow extends Activity implements View.OnClickListener {
         
         Log.d(TAG, "~~ InodePath = " + mInodePath);
         if (!mSlideShowMode) {
-            mCurrentIndex  = getIntent().getIntExtra("index", 0);
+            mCurIndex  = getIntent().getIntExtra("index", 0);
         } else {
-            mCurrentIndex = 0;
+            mCurIndex = 0;
         }
         
         mHanler.postDelayed(mToggleRunnable, 5000);
@@ -247,7 +248,13 @@ public class ImageShow extends Activity implements View.OnClickListener {
     public void onBackClick(View view) {
         onBackPressed();
     }
-    
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getIntent().putExtra("index", mCurIndex);
+    }
+
     @Override
     public void onBackPressed() {
         if (!mSlideShowMode && mSlideshow.getVisibility() == View.VISIBLE) {
