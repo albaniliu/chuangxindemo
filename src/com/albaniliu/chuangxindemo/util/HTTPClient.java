@@ -54,10 +54,14 @@ public class HTTPClient {
 	
 	static {
 		URL_INDEX = "http://184.105.176.95/app/DemoCenter/Api/albumlist.vdi";
-//		URL_INDEX = "http://192.168.3.113/app/DemoCenter/Api/albumlist.vdi";
 		URL_REQUEST = new HttpGet(URL_INDEX);
 		HOST = "http://184.105.176.95";
 		COVER_INDEX_PREFIX = "http://184.105.176.95";
+		
+//		URL_INDEX = "http://192.168.3.113/app/DemoCenter/Api/albumlist.vdi";
+//		URL_REQUEST = new HttpGet(URL_INDEX);
+//		HOST = "http://192.168.3.113";
+//		COVER_INDEX_PREFIX = "http://192.168.3.113";
 		
 	}
 	

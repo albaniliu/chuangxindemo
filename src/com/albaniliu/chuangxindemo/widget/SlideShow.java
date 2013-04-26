@@ -131,17 +131,21 @@ public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
                 performSetup(frame.width(), frame.height());
                 // We draw the source bitmap
                 if (mBitmap != null) {
+                	
                     if (mTimeElapsed > SLIDESHOW_DURATION) {
                         float alpha = ((float) (mTimeElapsed - SLIDESHOW_DURATION)) / 2000.0f;
                         paint.setColorFilter(null);
-                        if (alpha < 1.0f) {
-                             int val = (int)(255 * (1.0f - alpha));
+                        if (alpha < 1.0f) 
+                        {
+                             int val = (int)(255 * (alpha));
                              int srcColor = Color.argb(val, 0, 0, 0);
                              PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(srcColor, Mode.SRC_IN);
-                             paint.setColorFilter(null);
+                             paint.setColorFilter(colorFilter);
+                             c.drawBitmap(mBitmap, mRect, mFrameRect, paint);
                         }
-                        c.drawBitmap(mBitmap, mRect, mFrameRect, paint);
-                        if (alpha < 1.0f) {
+                        
+                        if (alpha < 1.0f)
+                        {
                             int val = (int) (255 * alpha);
                             int srcColor = Color.argb(val, 0, 0, 0);
                             PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(srcColor, Mode.DST_IN);
