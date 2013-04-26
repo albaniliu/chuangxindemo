@@ -49,7 +49,7 @@ public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
         holder.addCallback(this);
     }
 
-    public static final int SLIDESHOW_DURATION = 3000;
+    public static final int SLIDESHOW_DURATION = 5000;
 
     public interface DataSource {
         /**
