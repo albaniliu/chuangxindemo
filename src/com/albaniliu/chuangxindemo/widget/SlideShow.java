@@ -133,7 +133,7 @@ public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
                 if (mBitmap != null) {
                 	
                     if (mTimeElapsed > SLIDESHOW_DURATION) {
-                        float alpha = ((float) (mTimeElapsed - SLIDESHOW_DURATION)) / 2000.0f;
+                        float alpha = ((float) (mTimeElapsed - SLIDESHOW_DURATION)) / 1000.0f;
                         paint.setColorFilter(null);
                         if (alpha < 1.0f) 
                         {
