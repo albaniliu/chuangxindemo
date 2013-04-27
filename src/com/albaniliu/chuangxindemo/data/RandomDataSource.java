@@ -86,7 +86,15 @@ public class RandomDataSource implements SlideShow.DataSource {
     private File mTestFolder;
     private boolean mFromDB = false;
     private int mCurIndex = 0;
-    /**
+    public int getmCurIndex() {
+		return mCurIndex;
+	}
+
+	public void setmCurIndex(int mCurIndex) {
+		this.mCurIndex = mCurIndex;
+	}
+
+	/**
      * Matches code in MediaProvider.computeBucketValues. Should be a common
      * function.
      */

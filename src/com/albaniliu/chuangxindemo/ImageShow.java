@@ -252,7 +252,11 @@ public class ImageShow extends Activity implements View.OnClickListener {
     @Override
     public void onStop() {
         super.onStop();
-        getIntent().putExtra("index", mCurIndex);
+        if (mSlideshow.getVisibility() == View.VISIBLE) {
+        	getIntent().putExtra("index", mRandomDataSource.getmCurIndex());
+        } else {
+        	getIntent().putExtra("index", mCurIndex);
+        }
     }
 
     @Override
