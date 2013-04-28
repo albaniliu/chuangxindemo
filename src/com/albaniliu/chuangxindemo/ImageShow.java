@@ -11,6 +11,8 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -59,6 +61,7 @@ public class ImageShow extends Activity implements View.OnClickListener {
     private ImageButton mMenuBtn;
     private ScaleAnimation mInAnimation;
     private ScaleAnimation mOutAnimation;
+    private boolean mOrientationLocked = false;
 
     public static class ShowingNode {
         private String mPath;
@@ -186,6 +189,7 @@ public class ImageShow extends Activity implements View.OnClickListener {
             mSlideshow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    unlockOrientation();
                     finish();
                 }
             });
@@ -194,6 +198,7 @@ public class ImageShow extends Activity implements View.OnClickListener {
                 @Override
                 public void onClick(View v) {
                     mSlideshow.setVisibility(View.GONE);
+                    unlockOrientation();
                     showBarDirectly();
                 }
             });
@@ -263,6 +268,7 @@ public class ImageShow extends Activity implements View.OnClickListener {
     public void onBackPressed() {
         if (!mSlideShowMode && mSlideshow.getVisibility() == View.VISIBLE) {
             mSlideshow.setVisibility(View.GONE);
+            unlockOrientation();
             showBarDirectly();
             return;
         }
@@ -270,8 +276,10 @@ public class ImageShow extends Activity implements View.OnClickListener {
     }
 
     public void onSlideClick(View view) {
+        mRandomDataSource.setmCurIndex(mCurIndex);
         mSlideshow.setDataSource(mRandomDataSource);
         mSlideshow.setVisibility(View.VISIBLE);
+        lockOrientation();
     }
 
     private ArrayList<ShowingNode> parseFilesPath(FInode inode) {
@@ -389,5 +397,27 @@ public class ImageShow extends Activity implements View.OnClickListener {
                 break;
         }
         
+    }
+    
+    public void lockOrientation() {
+        if (mOrientationLocked) return;
+        mOrientationLocked = true;
+        if (this.getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE) {
+            Log.d(TAG, "lock orientation to landscape");
+            this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            Log.d(TAG, "lock orientation to portrait");
+            this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+    }
+
+    // Unlock the framework orientation, so it can change when the device
+    // rotates.
+    public void unlockOrientation() {
+        if (!mOrientationLocked) return;
+        mOrientationLocked = false;
+        Log.d(TAG, "unlock orientation");
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 }

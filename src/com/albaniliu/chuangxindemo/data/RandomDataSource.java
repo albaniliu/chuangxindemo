@@ -90,8 +90,8 @@ public class RandomDataSource implements SlideShow.DataSource {
 		return mCurIndex;
 	}
 
-	public void setmCurIndex(int mCurIndex) {
-		this.mCurIndex = mCurIndex;
+	public void setmCurIndex(int curIndex) {
+		mCurIndex = curIndex;
 	}
 
 	/**
