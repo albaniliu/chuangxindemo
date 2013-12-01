@@ -68,9 +68,12 @@ public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
         }
     };
     private static final Paint sPaint = new Paint();
+    private static final Paint sClearPanit = new Paint();
     static {
         sPaint.setFilterBitmap(true);
         sPaint.setDither(true);
+
+        sClearPanit.setXfermode(new PorterDuffXfermode(Mode.CLEAR));
     }
     private boolean mVisible = true;
     private DataSource mSource;
@@ -133,14 +136,12 @@ public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
                 // We draw the source bitmap
                 if (mBitmap != null) {
                 	// 将clear动作提前
-                	Paint clear = new Paint();
-                    clear.setXfermode(new PorterDuffXfermode(Mode.CLEAR));
-                    c.drawPaint(clear);
+                    c.drawPaint(sClearPanit);
 
                     if (mTimeElapsed > SLIDESHOW_DURATION) {
                         float alpha = ((float) (mTimeElapsed - SLIDESHOW_DURATION)) / ANIMING_DURATION;
                         paint.setColorFilter(null);
-                        if (alpha < 0.9f) 
+                        if (alpha < 0.85f) 
                         {
                              int val = (int)(255 * (1.0f - alpha));
                              int srcColor = Color.argb(val, 0, 0, 0);
