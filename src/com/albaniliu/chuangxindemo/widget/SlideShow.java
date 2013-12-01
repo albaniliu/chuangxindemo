@@ -50,6 +50,7 @@ public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public static final int SLIDESHOW_DURATION = 5000;
+    public static final float ANIMING_DURATION = 1500.0f;
 
     public interface DataSource {
         /**
@@ -131,15 +132,19 @@ public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
                 performSetup(frame.width(), frame.height());
                 // We draw the source bitmap
                 if (mBitmap != null) {
-                	
+                	// 将clear动作提前
+                	Paint clear = new Paint();
+                    clear.setXfermode(new PorterDuffXfermode(Mode.CLEAR));
+                    c.drawPaint(clear);
+
                     if (mTimeElapsed > SLIDESHOW_DURATION) {
-                        float alpha = ((float) (mTimeElapsed - SLIDESHOW_DURATION)) / 1000.0f;
+                        float alpha = ((float) (mTimeElapsed - SLIDESHOW_DURATION)) / ANIMING_DURATION;
                         paint.setColorFilter(null);
-                        if (alpha < 1.0f) 
+                        if (alpha < 0.9f) 
                         {
-                             int val = (int)(255 * (alpha));
+                             int val = (int)(255 * (1.0f - alpha));
                              int srcColor = Color.argb(val, 0, 0, 0);
-                             PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(srcColor, Mode.SRC_IN);
+                             PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(srcColor, Mode.DST_IN);
                              paint.setColorFilter(colorFilter);
                              c.drawBitmap(mBitmap, mRect, mFrameRect, paint);
                         }
@@ -166,11 +171,7 @@ public class SlideShow extends SurfaceView implements SurfaceHolder.Callback {
                             mTimeElapsed = 0;
                         }
                     } else {
-                        Paint clear = new Paint();
-                        clear.setXfermode(new PorterDuffXfermode(Mode.CLEAR));
-                        c.drawPaint(clear);
-
-                        paint.setColorFilter(null);
+                    	paint.setColorFilter(null);
                         c.drawBitmap(mBitmap, mRect, mFrameRect, paint);
                     }
                     // performUpdate(mFrameRect, sGrow, delta);
