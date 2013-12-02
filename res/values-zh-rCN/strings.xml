@@ -1,5 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Demo</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="image_button">图片</string>
+    <string name="video_button">视频</string>
+    <string name="company">创新中心演示系统</string>
+    <string name="beauty">性感</string>
+    <string name="creative">清新</string>
+    <string name="nonmainstream">美空</string>
+    <string name="cartoon">妹子图</string>
+    <string name="love">模特</string>
+    <string name="landscape">日韩</string>
+    <string name="animation">欧美</string>
+    <string name="star">校花</string>
+    <string name="plant">可爱</string>
+    <string name="art">非主流</string>
+    <string name="animal">美胸</string>
+    <string name="colorful">美腿</string>
+    <string name="car">美臀</string>
+    <string name="man">比基尼</string>
+    <string name="sky">制服</string>
+    <string name="sport">超短裙</string>
+    <string name="classfi_line_left">分类行左图</string>
+    <string name="classfi_line_right">分类行右图</string>
+    <string name="dialog_title">正在加载</string>
+    <string name="dialog_msg">请稍等..</string>
+    <string name="menu">菜单</string>
+    <string name="yes">确认</string>
+    <string name="no">取消</string>
+
     <string name="btn_text_back">返回</string>
     <string name="btn_text_slideshow">幻灯片</string>
     
